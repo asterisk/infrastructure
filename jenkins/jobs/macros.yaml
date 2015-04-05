@@ -6,7 +6,10 @@
 builder:
     name: gerrit-git-prep
     builders:
-        - shell: "/var/lib/jenkins/git/infrastructure/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk"
+        - shell: |
+            #!/bin/bash
+            export BRANCH={branch}
+            /var/lib/jenkins/git/infrastructure/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
 
 builder:
     name: python-coverage
@@ -21,4 +24,8 @@ builder:
 builder:
     name: pep8
     builders:
-        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-pep8.sh"
+        - shell: |
+            #!/bin/bash
+            export PYTHON_DIR={python_dir}
+            /var/lib/jenkins/git/infrastructure/scripts/run-pep8.sh
+
