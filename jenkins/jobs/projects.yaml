@@ -1,0 +1,20 @@
+
+###############################################################################
+# Asterisk Projects
+###############################################################################
+
+- project:
+    name: 'testsuite'
+    node: 'centos || debian'
+
+    jobs:
+        - python-jobs
+        - testsuite-jobs
+
+- project:
+    name: 'asterisk'
+    node: 'centos || debian'
+
+    jobs:
+        - asterisk-jobs
+

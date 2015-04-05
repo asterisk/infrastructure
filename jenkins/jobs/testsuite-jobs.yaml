@@ -1,0 +1,24 @@
+
+- job:
+    name: gate-testsuite
+    node: 'centos || debian'
+
+    wrappers:
+        - build-timeout:
+            timeout: 60
+        - timestamps
+
+    builders:
+        - gerrit-git-prep
+        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-testsuite-unittests.sh" 
+
+    publishers:
+        - archive:
+            artifacts: 'logs/*'
+
+- job-group:
+    name: testsuite-jobs
+    jobs:
+        - gate-testsuite
+
+ 

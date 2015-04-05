@@ -1,0 +1,33 @@
+# Note: elements of this file were taken from the python-jobs.yaml
+# file of the OpenStack project-config project.
+#
+
+- job-template:
+    name: '{name}-python-coverage'
+
+    wrappers:
+        - build-timeout:
+            timeout: 60
+        - timestamps
+
+    builders:
+        - gerrit-git-prep
+        - python-coverage
+
+    node: '{node}'
+
+- job-template:
+    name: gate-{name}-pep8
+
+    builders:
+        - gerrit-git-prep
+        - pep8
+
+    node: '{node}'
+
+- job-group:
+    name: python-jobs
+    jobs:
+        - '{name}-coverage'
+        - 'gate-{name}-pep8'
+

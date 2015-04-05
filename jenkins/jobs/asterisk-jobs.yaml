@@ -1,0 +1,14 @@
+- job-template:
+    name: '{name}-c-coverage'
+
+    wrappers:
+        - build-timeout:
+            timeout: 60
+        - timestamps
+
+    builders:
+        - gerrit-git-prep
+        - c-coverage
+
+    node: '{node}'
+

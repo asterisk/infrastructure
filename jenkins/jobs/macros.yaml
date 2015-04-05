@@ -1,0 +1,24 @@
+
+###############################################################################
+# Project building routines
+###############################################################################
+
+builder:
+    name: gerrit-git-prep
+    builders:
+        - shell: "/var/lib/jenkins/git/infrastructure/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk"
+
+builder:
+    name: python-coverage
+    builders:
+        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-python-cover.sh"
+
+builder:
+    name: c-coverage
+    builders:
+        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-c-cover.sh"
+
+builder:
+    name: pep8
+    builders:
+        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-pep8.sh"
