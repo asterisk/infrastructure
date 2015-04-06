@@ -27,5 +27,6 @@ builder:
         - shell: |
             #!/bin/bash
             export PYTHON_DIR={python_dir}
+            export PEP8_OUTPUT={pep8_output}
             /var/lib/jenkins/git/infrastructure/scripts/run-pep8.sh
 
