@@ -1,5 +1,6 @@
 - job-template:
-    name: '{name}-c-coverage'
+    name: 'gate-asterisk'
+    node: 'centos || debian'
 
     wrappers:
         - build-timeout:
@@ -8,7 +9,14 @@
 
     builders:
         - gerrit-git-prep
-        - c-coverage
+        - build-asterisk
+        - run-asterisk-unittests
 
-    node: '{node}'
+    publishers:
+        - archive:
+            artifacts: 'asterisk/test-reports/*'
 
+- job-group:
+    name: asterisk-jobs
+    jobs:
+        - 'gate-asterisk'

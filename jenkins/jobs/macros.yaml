@@ -12,14 +12,26 @@ builder:
             /var/lib/jenkins/git/infrastructure/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
 
 builder:
+    name: build-asterisk
+    builders:
+        - shell: |
+            #!/bin/bash
+            export DISABLE_OPTIONS={disables}
+            export ENABLE_OPTIONS={enables}
+            pushd asterisk
+            /var/lib/jenkins/git/infrastructure/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
+            popd asterisk
+        - shell: |
+            #!/bin/bash
+            pushd asterisk
+            /var/lib/jenkins/git/infrastructure/scripts/run-asterisk-unittests.sh
+            popd asterisk
+
+
+builder:
     name: python-coverage
     builders:
         - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-python-cover.sh"
-
-builder:
-    name: c-coverage
-    builders:
-        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-c-cover.sh"
 
 builder:
     name: pep8
