@@ -3,15 +3,15 @@
 # Project building routines
 ###############################################################################
 
-builder:
+- builder:
     name: gerrit-git-prep
     builders:
         - shell: |
             #!/bin/bash
             export BRANCH={branch}
-            /var/lib/jenkins/git/infrastructure/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
+            /var/lib/jenkins/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
 
-builder:
+- builder:
     name: build-asterisk
     builders:
         - shell: |
@@ -19,21 +19,25 @@ builder:
             export DISABLE_OPTIONS={disables}
             export ENABLE_OPTIONS={enables}
             pushd asterisk
-            /var/lib/jenkins/git/infrastructure/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
+            /var/lib/jenkins/git/infrastructure/jenkins/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
             popd asterisk
+
+- builder:
+    name: run-asterisk-unittests
+    builders:
         - shell: |
             #!/bin/bash
             pushd asterisk
-            /var/lib/jenkins/git/infrastructure/scripts/run-asterisk-unittests.sh
+            /var/lib/jenkins/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
             popd asterisk
 
 
-builder:
+- builder:
     name: python-coverage
     builders:
-        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-python-cover.sh"
+        - shell: "/var/lib/jenkins/git/infrastructure/jenkins/scripts/run-python-cover.sh"
 
-builder:
+- builder:
     name: pep8
     builders:
         - shell: |

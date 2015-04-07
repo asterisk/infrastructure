@@ -3,8 +3,10 @@
     node: 'centos || debian'
 
     wrappers:
-        - build-timeout:
+        - timeout:
             timeout: 60
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
         - timestamps
 
     builders:
