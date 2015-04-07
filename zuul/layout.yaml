@@ -1,0 +1,143 @@
+pipelines:
+    -
+        name: check
+        description: Newly uploaded patchsets enter this pipeline to get an initial +1/-1 from Jenkins
+        success-message: Build succeeded (check pipeline)
+        failure-message: Build failed :-( (check pipeline)
+        manager: IndependentPipelineManager
+        source: gerrit
+        precedence: normal
+        require:
+            open: True
+            current-patchset: True
+        trigger:
+            gerrit:
+                - event: patchset-created
+                - event: change-restored
+        success:
+            gerrit:
+                verified: 1
+        failure:
+            gerrit:
+                verified: -1
+    -
+        name: gate
+        description: Changes that have been approved by mergers are enqueued in this pipeline.
+        success-message: Build succeeded (gate pipeline)
+        failure-message: Build failed :-( (gate pipeline)
+        manager: DependentPipelineManager
+        source: gerrit
+        precedence: high
+        require:
+            open: True
+            current-patchset: True
+            approval:
+                -
+                    verified: [1, 2]
+        trigger:
+            gerrit:
+                -
+                    event: comment-added
+                    approval:
+                        - verified: [1, 2]
+        start:
+            gerrit:
+                verified: 0
+        success:
+            gerrit:
+                verified: 2
+                submit: true
+        failure:
+            gerrit:
+                verified: -2
+        window-floor: 20
+        window-increase-factor: 2
+    -
+        name: post
+        description: This pipeline runs jobs that operate after each change is merged.
+        manager: IndependentPipelineManager
+        source: gerrit
+        trigger:
+            gerrit:
+                -
+                    event: ref-updated
+                    ref: ^(?!refs/).*$
+    -
+        name: tag
+        description: This pipeline runs jobs in response to any tag event.
+        manager: IndependentPipelineManager
+        source: gerrit
+        trigger:
+            gerrit:
+                -
+                    event: ref-updated
+                    ref: ^refs/tags/.*$
+    -
+        name: periodic-stable
+        description: Periodic checks of the stable branches.
+        manager: IndependentPipelineManager
+        source: gerrit
+        precedence: low
+        trigger:
+            timer:
+                - time: '0 0 * * *'
+        failure:
+            smtp:
+                from: asteriskteam@digium.com
+                to: test-results@lists.digium.com
+                subject: 'Stable check of {change.project} failed'
+    -
+        name: merge-check
+        description: >
+          Each time a change merges, this pipeline verifies that all open changes
+          on the same project are still mergeable.
+        failure-message: Build failed (merge-check pipeline).
+        manager: IndependentPipelineManager
+        ignore-dependencies: true
+        source: gerrit
+        precedence: low
+        require:
+            approval:
+                -       
+                    verified: [1, 2]
+                    username: jenkins
+        trigger:
+            zuul:
+                - event: project-change-merged
+        merge-failure:
+            gerrit:
+                verified: -1
+
+project-templates:
+    -
+        name: merge-check
+        merge-check:
+            - noop
+    -
+        name: python-jobs
+        check:
+            - 'gate-{name}-pep8'
+        gate:
+            - 'gate-{name}-pep8'
+    -
+        name: asterisk-jobs
+        check:
+            - 'gate-{name}-devmode'
+        gate:
+            - 'gate-{name}-devmode'
+
+projects:
+    -
+        name: 'testsuite'
+        template:
+            - name: 'merge-check'
+            - name: 'python-jobs'
+        check:
+            - testsuite-gate
+        gate:
+            - testsuite-gate
+    -
+        name: 'TEST-Asterisk'
+        template:
+            - name: 'merge-check'
+            - name: 'asterisk-jobs'
