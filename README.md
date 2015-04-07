@@ -24,3 +24,8 @@ https://git.openstack.org/openstack-infra/jenkins-job-builder
 
 This directory contains continuous integration scripts used by the YAML job
 definitions.
+
+# Zuul
+
+This directory contains the Zuul YAML layout configuration. This file describes
+how Gerrit changes are pipelined into Jenkins Job Builder jobs to execute.
