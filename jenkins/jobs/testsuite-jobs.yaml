@@ -11,8 +11,9 @@
         - timestamps
 
     builders:
+        - node-git-prep
         - gerrit-git-prep
-        - shell: "/var/lib/jenkins/git/infrastructure/scripts/run-testsuite-unittests.sh" 
+        - shell: "/srv/git/infrastructure/jenkins/scripts/run-testsuite-unittests.sh" 
 
     publishers:
         - archive:

@@ -13,6 +13,7 @@
         - timestamps
 
     builders:
+        - node-git-prep
         - gerrit-git-prep
         - python-coverage
 
@@ -22,6 +23,7 @@
     name: gate-{name}-pep8
 
     builders:
+        - node-git-prep
         - gerrit-git-prep
         - pep8
 

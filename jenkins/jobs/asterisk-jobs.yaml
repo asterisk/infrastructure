@@ -10,6 +10,7 @@
         - timestamps
 
     builders:
+        - node-git-prep
         - gerrit-git-prep
         - build-asterisk
         - run-asterisk-unittests

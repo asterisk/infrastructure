@@ -4,12 +4,28 @@
 ###############################################################################
 
 - builder:
+    name: node-git-prep
+    builders:
+        - shell: |
+            #!/bin/bash
+            if [ ! -d "/srv/git/infrastructure" ]; then
+                mkdir -p "/srv/git/infrastructure"
+                pushd "/srv/git/infrastructure"
+                git init
+                git remote add origin git@git.asterisk.org:asterisk/infrastructure
+                popd
+            fi
+            push "/srv/git/infrastructure"
+            git fetch origin
+            popd
+
+- builder:
     name: gerrit-git-prep
     builders:
         - shell: |
             #!/bin/bash
             export BRANCH={branch}
-            /var/lib/jenkins/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
+            /srv/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
 
 - builder:
     name: build-asterisk
@@ -19,7 +35,7 @@
             export DISABLE_OPTIONS={disables}
             export ENABLE_OPTIONS={enables}
             pushd asterisk
-            /var/lib/jenkins/git/infrastructure/jenkins/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
+            /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
             popd asterisk
 
 - builder:
@@ -28,14 +44,14 @@
         - shell: |
             #!/bin/bash
             pushd asterisk
-            /var/lib/jenkins/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
+            /srv/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
             popd asterisk
 
 
 - builder:
     name: python-coverage
     builders:
-        - shell: "/var/lib/jenkins/git/infrastructure/jenkins/scripts/run-python-cover.sh"
+        - shell: "/srv/git/infrastructure/jenkins/scripts/run-python-cover.sh"
 
 - builder:
     name: pep8
@@ -44,5 +60,5 @@
             #!/bin/bash
             export PYTHON_DIR={python_dir}
             export PEP8_OUTPUT={pep8_output}
-            /var/lib/jenkins/git/infrastructure/scripts/run-pep8.sh
+            /srv/git/infrastructure/jenkins/scripts/run-pep8.sh
 
