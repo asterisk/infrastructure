@@ -122,9 +122,9 @@ project-templates:
     -
         name: asterisk-jobs
         check:
-            - 'gate-{name}-devmode'
+            - 'gate-asterisk'
         gate:
-            - 'gate-{name}-devmode'
+            - 'gate-asterisk'
 
 projects:
     -
