@@ -127,15 +127,15 @@ project-templates:
             - 'gate-asterisk'
 
 projects:
-    -
-        name: 'testsuite'
-        template:
-            - name: 'merge-check'
-            - name: 'python-jobs'
-        check:
-            - testsuite-gate
-        gate:
-            - testsuite-gate
+#    -
+#        name: 'testsuite'
+#        template:
+#            - name: 'merge-check'
+#            - name: 'python-jobs'
+#        check:
+#            - testsuite-gate
+#        gate:
+#            - testsuite-gate
     -
         name: 'TEST-Asterisk'
         template:
