@@ -15,7 +15,7 @@
                 git remote add origin git@git.asterisk.org:asterisk/infrastructure
                 popd
             fi
-            push "/srv/git/infrastructure"
+            pushd "/srv/git/infrastructure"
             git fetch origin
             popd
 
