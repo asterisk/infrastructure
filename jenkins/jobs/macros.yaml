@@ -12,11 +12,12 @@
                 mkdir -p "/srv/git/infrastructure"
                 pushd "/srv/git/infrastructure"
                 git init
-                git remote add origin git@git.asterisk.org:asterisk/infrastructure
+                git remote add origin https://gerrit.asterisk.org/infrastructure
                 popd
             fi
             pushd "/srv/git/infrastructure"
             git fetch origin
+            git checkout master
             popd
 
 - builder:
