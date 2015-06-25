@@ -27,6 +27,15 @@ if [ -z "$ZUUL_URL" ]; then
     exit 1
 fi
 
+echo "Running with the following parameters:"
+echo "  GERRIT_SITE => $GERRIT_SITE"
+echo "  GIT_ORIGIN => $GIT_ORIGIN"
+echo "  BRANCH => $BRANCH"
+echo "  ZUUL_URL => $ZUUL_URL"
+echo "  ZUUL_REF => $ZUUL_REF"
+echo "  ZUUL_NEWREV => $ZUUL_NEWREV"
+echo
+
 if [ -z "$GIT_ORIGIN" ] || [ -n "$ZUUL_NEWREV" ]; then
     GIT_ORIGIN="$GERRIT_SITE/p"
     # git://git.openstack.org/
@@ -56,10 +65,10 @@ if [[ ! -e .git ]]; then
     if [ -d /opt/git/$ZUUL_PROJECT/.git ]; then
         git clone file:///opt/git/$ZUUL_PROJECT .
     else
-        git clone $GIT_ORIGIN/$ZUUL_PROJECT .
+        git clone $GERRIT_SITE/$ZUUL_PROJECT .
     fi
 fi
-git remote set-url origin $GIT_ORIGIN/$ZUUL_PROJECT
+git remote set-url origin $GERRIT_SITE/$ZUUL_PROJECT
 
 # attempt to work around bugs 925790 and 1229352
 if ! git remote update; then
