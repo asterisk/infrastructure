@@ -20,6 +20,10 @@ GIT_ORIGIN=$2
 CI_USER=jenkins
 CI_GROUP=users
 
+if [ -z "$CLEAN_DIR" ]; then
+    CLEAN_DIR=0
+fi
+
 if [ -z "$GERRIT_SITE" ]; then
     echo "The gerrit site name (eg 'https://review.openstack.org') must be the first argument."
     exit 1
