@@ -58,16 +58,24 @@ if [ ! -z "$ZUUL_CHANGE" ]; then
     echo "Triggered by: $GERRIT_SITE/$ZUUL_CHANGE"
 fi
 
+if [ -d $ZUUL_PROJECT ] && [ $CLEAN_DIR -eq 1 ]; then
+    echo "Cleaning $ZUUL_PROJECT"
+    rm -fr $ZUUL_PROJECT
+fi
+
 set -x
-if [[ ! -e .git ]]; then
+if [[ ! -e $ZUUL_PROJECT/.git ]]; then
     ls -a
     rm -fr .[^.]* *
     if [ -d /opt/git/$ZUUL_PROJECT/.git ]; then
-        git clone file:///opt/git/$ZUUL_PROJECT .
+        git clone file:///opt/git/$ZUUL_PROJECT $ZUUL_PROJECT
     else
-        git clone $GERRIT_SITE/$ZUUL_PROJECT .
+        git clone $GERRIT_SITE/$ZUUL_PROJECT $ZUUL_PROJECT
     fi
 fi
+
+pushd $ZUUL_PROJECT
+
 git remote set-url origin $GERRIT_SITE/$ZUUL_PROJECT
 
 # attempt to work around bugs 925790 and 1229352
@@ -106,3 +114,6 @@ if [ -f .gitmodules ]; then
     git submodule sync
     git submodule update --init
 fi
+
+popd
+
