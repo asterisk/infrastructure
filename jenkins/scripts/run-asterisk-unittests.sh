@@ -151,6 +151,9 @@ run_unit_tests() {
 
 }
 
+export PATH="$PATH:/usr/lib/ccache:/usr/local/bin:/usr/sbin:/usr/local/sbin"
+echo "PATH has been set to: ${PATH}"
+
 if ! which asterisk; then
 	echo "Asterisk not installed"
 	exit 1
