@@ -31,8 +31,17 @@ DEBUG=false
 ENABLES=""
 DISABLES=""
 
+CI_USER=jenkins
+CI_GROUP=users
+
 PWD=`pwd`
 BUILDFLAGS="NOISY_BUILD=yes"
+
+if [ -n "$ZUUL_PROJECT" ]; then
+	PROJECT=$ZUUL_PROJECT
+else
+	PROJECT=asterisk
+fi
 
 OPTIND=1
 while getopts "h?d:e:v" opt; do
@@ -54,7 +63,6 @@ while getopts "h?d:e:v" opt; do
 done
 shift $((OPTIND-1)) # Shift off the options and optional --
 
-echo $ENABLES
 IFS=' ' read -a ARR_ENABLES <<< "${ENABLES}"
 IFS=' ' read -a ARR_DISABLES <<< "$DISABLES"
 
@@ -73,6 +81,9 @@ echo "PATH has been set to: ${PATH}"
 
 # This probably should be set up in the machine configuration
 ulimit -n 32767
+
+echo ${PROJECT}
+pushd ${PROJECT}
 
 # Test distclean
 ${MAKE} ${BUILDFLAGS} distclean
@@ -134,8 +145,19 @@ echo "*** Installing Asterisk and Sample Configuration ***"
 WGET_EXTRA_ARGS=--quiet ${MAKE} ${BUILDFLAGS} install
 ${MAKE} ${BUILDFLAGS} samples
 
+popd
+
 if ! which asterisk; then
 	echo "*** Failed to install Asterisk ***"
 	exit 1
 fi
+
+# Grant ownership and permissions so we can manipulate things easier
+chown -R ${CI_USER}:${CI_GROUP} /usr/lib/asterisk
+chown -R ${CI_USER}:${CI_GROUP} /var/lib/asterisk
+chown -R ${CI_USER}:${CI_GROUP} /var/spool/asterisk
+chown -R ${CI_USER}:${CI_GROUP} /var/log/asterisk
+chown -R ${CI_USER}:${CI_GROUP} /var/run/asterisk
+chown -R ${CI_USER}:${CI_GROUP} /etc/asterisk
+chown -R ${CI_USER}:${CI_GROUP} /usr/sbin/asterisk
 
