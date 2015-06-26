@@ -147,7 +147,7 @@ ${MAKE} ${BUILDFLAGS} samples
 
 popd
 
-if ! which asterisk; then
+if [ ! -f /usr/sbin/asterisk ]; then
 	echo "*** Failed to install Asterisk ***"
 	exit 1
 fi
