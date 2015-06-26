@@ -27,7 +27,7 @@
         - shell: |
             #!/bin/bash
             export BRANCH={branch}
-            /srv/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
+            sudo /srv/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
 
 - builder:
     name: build-asterisk
@@ -36,18 +36,14 @@
             #!/bin/bash
             export DISABLE_OPTIONS={disables}
             export ENABLE_OPTIONS={enables}
-            pushd asterisk
             /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
-            popd asterisk
 
 - builder:
     name: run-asterisk-unittests
     builders:
         - shell: |
             #!/bin/bash
-            pushd asterisk
             /srv/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
-            popd asterisk
 
 
 - builder:
