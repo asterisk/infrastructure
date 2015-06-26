@@ -161,3 +161,5 @@ chown -R ${CI_USER}:${CI_GROUP} /var/run/asterisk
 chown -R ${CI_USER}:${CI_GROUP} /etc/asterisk
 chown -R ${CI_USER}:${CI_GROUP} /usr/sbin/asterisk
 
+echo "*** Asterisk built and installed successfully ***"
+
