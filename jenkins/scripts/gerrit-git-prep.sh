@@ -17,6 +17,9 @@
 GERRIT_SITE=$1
 GIT_ORIGIN=$2
 
+CI_USER=jenkins
+CI_GROUP=users
+
 if [ -z "$GERRIT_SITE" ]; then
     echo "The gerrit site name (eg 'https://review.openstack.org') must be the first argument."
     exit 1
@@ -75,6 +78,7 @@ if [[ ! -e $ZUUL_PROJECT/.git ]]; then
     fi
 fi
 
+chown -R $CI_USER:$CI_GROUP $ZUUL_PROJECT
 pushd $ZUUL_PROJECT
 
 git remote set-url origin $GERRIT_SITE/$ZUUL_PROJECT
