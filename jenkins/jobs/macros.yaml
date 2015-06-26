@@ -36,7 +36,7 @@
             #!/bin/bash
             export DISABLE_OPTIONS={disables}
             export ENABLE_OPTIONS={enables}
-            /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
+            sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh ${DISABLE_OPTIONS} ${ENABLE_OPTIONS} -v
 
 - builder:
     name: run-asterisk-unittests
