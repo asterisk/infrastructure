@@ -22,6 +22,7 @@ if [ -z "$GERRIT_SITE" ]; then
     exit 1
 fi
 
+echo $ZUUL_URL
 if [ -z "$ZUUL_URL" ]; then
     echo "The ZUUL_URL must be provided."
     exit 1
