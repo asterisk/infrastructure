@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 #
 # Runs the Asterisk unit tests
@@ -19,7 +19,14 @@
 # under the License.
 
 PWD=`pwd`
-TEST_RESULTS_DIR=${PWD}/test-reports
+
+if [ -n "$ZUUL_PROJECT" ]; then
+	PROJECT=$ZUUL_PROJECT
+else
+	PROJECT=asterisk
+fi
+
+TEST_RESULTS_DIR=${PWD}/$PROJECT/test-reports
 
 start_asterisk() {
 	echo "*** Starting Asterisk ***"
@@ -144,16 +151,22 @@ run_unit_tests() {
 
 }
 
-if ! which asterisk ; then
+if ! which asterisk; then
 	echo "Asterisk not installed"
 	exit 1
 fi
 
-mkdir ${TEST_RESULTS_DIR}
+pushd $PROJECT
+
+if [ ! -d ${TEST_RESULTS_DIR} ]; then
+	mkdir ${TEST_RESULTS_DIR}
+fi
 
 killall_asterisk
 setup_configs
 run_unit_tests
 restore_configs
+
+popd
 
 exit 0
