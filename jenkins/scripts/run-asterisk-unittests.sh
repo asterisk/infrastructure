@@ -50,7 +50,7 @@ stop_asterisk() {
 		# Mac OSX
 		launchctl unload -w /Library/LaunchDaemons/org.asterisk.asterisk.plist || :
 	else
-		asterisk -rx "core stop now"
+		asterisk -rx "core stop gracefully"
 	fi
 	sleep 5
 
