@@ -1,5 +1,5 @@
 - job-template:
-    name: 'check-asterisk'
+    name: 'check-{name}'
     node: 'centos || debian'
 
     wrappers:
@@ -17,7 +17,7 @@
 
 
 - job-template:
-    name: 'gate-asterisk'
+    name: 'gate-{name}'
     node: 'centos || debian'
 
     wrappers:
@@ -40,6 +40,6 @@
 - job-group:
     name: asterisk-jobs
     jobs:
-        - 'check-asterisk'
-        - 'gate-asterisk'
+        - 'check-{name}'
+        - 'gate-{name}'
 
