@@ -18,3 +18,10 @@
     jobs:
         - asterisk-jobs
 
+- project:
+    name: 'asterisk'
+    node: 'centos || debian'
+
+    jobs:
+        - asterisk-jobs
+
