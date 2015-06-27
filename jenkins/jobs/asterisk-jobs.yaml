@@ -1,4 +1,22 @@
 - job-template:
+    name: 'check-asterisk'
+    node: 'centos || debian'
+
+    wrappers:
+        - timeout:
+            timeout: 60
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep
+        - build-asterisk
+        - run-asterisk-unittests
+
+
+- job-template:
     name: 'gate-asterisk'
     node: 'centos || debian'
 
@@ -22,4 +40,6 @@
 - job-group:
     name: asterisk-jobs
     jobs:
+        - 'check-asterisk'
         - 'gate-asterisk'
+
