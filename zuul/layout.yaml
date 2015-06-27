@@ -21,7 +21,7 @@ pipelines:
                 verified: 1
         failure:
             gerrit:
-                verified: -1
+                verified: 0
     -
         name: gate
         description: Changes that have been approved by mergers are enqueued in this pipeline.
@@ -53,7 +53,7 @@ pipelines:
                 submit: true
         failure:
             gerrit:
-                verified: -2
+                verified: 0
         window-floor: 20
         window-increase-factor: 2
     -
@@ -126,7 +126,7 @@ project-templates:
     -
         name: asterisk-jobs
         check:
-            - 'gate-asterisk'
+            - 'check-asterisk'
         gate:
             - 'gate-asterisk'
 
@@ -145,3 +145,9 @@ projects:
         template:
             - name: 'merge-check'
             - name: 'asterisk-jobs'
+    -
+        name: 'asterisk'
+        template:
+            - name: 'merge-check'
+            - name: 'asterisk-jobs'
+
