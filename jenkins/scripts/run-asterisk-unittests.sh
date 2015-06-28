@@ -143,7 +143,7 @@ run_unit_tests() {
 
 	if [ -f core* ] ; then
 		echo "*** Found a core file after running unit tests ***"
-		gdb asterisk core* -x ${TEST_RESULTS_DIR}/bt.txt
+		gdb asterisk core* -ex "bt full" -ex "thread apply all bt" --batch
 		exit 1
 	fi
 
