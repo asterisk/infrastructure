@@ -41,8 +41,6 @@
 - job-template:
     name: 'gate-{name}-channel-drivers'
     node: 'centos || debian'
-    testsuite-params: '-t tests/channels'
-    build-asterisk-params: '-v -e DO_CRASH'
 
     wrappers:
         - timeout:
@@ -54,9 +52,11 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - build-asterisk
+        - build-asterisk:
+            build-asterisk-params: '-v -e DO_CRASH'
         - prep-testsuite
-        - run-testsuite
+        - run-testsuite:
+            testsuite-params: '-t tests/channels'
 
     publishers:
         - publish-asterisk-testsuite
@@ -65,8 +65,6 @@
 - job-template:
     name: 'gate-{name}-external-mwi'
     node: 'centos || debian'
-    testsuite-params: '-g mwi_external'
-    build-asterisk-params: '-v -d app_voicemail -e res_mwi_external -e res_mwi_external_ami -e res_stasis_mailbox -e DO_CRASH'
 
     wrappers:
         - timeout:
@@ -78,9 +76,11 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - build-asterisk
+        - build-asterisk:
+            build-asterisk-params: '-v -d app_voicemail -e res_mwi_external -e res_mwi_external_ami -e res_stasis_mailbox -e DO_CRASH'
         - prep-testsuite
-        - run-testsuite
+        - run-testsuite:
+            testsuite-params: '-g mwi_external'
 
     publishers:
         - publish-asterisk-testsuite
@@ -89,8 +89,6 @@
 - job-template:
     name: 'gate-{name}-ari'
     node: 'centos || debian'
-    testsuite-params: '-g ARI'
-    build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
     wrappers:
         - timeout:
             timeout: 60
@@ -101,9 +99,11 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - build-asterisk
+        - build-asterisk:
+            build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
         - prep-testsuite
-        - run-testsuite
+        - run-testsuite:
+            testsuite-params: '-g ARI'
 
     publishers:
         - publish-asterisk-testsuite
