@@ -38,7 +38,7 @@
 
 - builder:
     name: run-asterisk-unittests
-    uilders:
+    builders:
         - build-asterisk:
             build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
         - shell: |
