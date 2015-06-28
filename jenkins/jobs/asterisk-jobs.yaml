@@ -15,6 +15,10 @@
         - build-asterisk
         - run-asterisk-unittests
 
+    publishers:
+        - junit:
+            results: '{name}/test-results/*.xml'
+            test-stability: true
 
 - job-template:
     name: 'gate-{name}'
@@ -32,10 +36,6 @@
         - gerrit-git-prep
         - build-asterisk
         - run-asterisk-unittests
-
-    publishers:
-        - archive:
-            artifacts: 'asterisk/test-reports/*'
 
 - job-group:
     name: asterisk-jobs
