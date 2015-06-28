@@ -38,10 +38,11 @@ pipelines:
                     verified: [1, 2]
         trigger:
             gerrit:
-                -
-                    event: comment-added
+                - event: comment-added
                     approval:
                         - code-review: 2
+                - event: comment-added
+                  comment: (?i)^(Patch Set [0-9]+:)?( [\w\\+-]*)*(\n\n)?\s*(regate)
         success:
             gerrit:
                 verified: 2
