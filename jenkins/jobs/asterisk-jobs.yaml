@@ -17,7 +17,7 @@
 
     publishers:
         - junit:
-            results: '{name}/test-results/*.xml'
+            results: '{name}/test-reports/*.xml'
             test-stability: true
 
 - job-template:
