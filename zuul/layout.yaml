@@ -2,8 +2,8 @@ pipelines:
     -
         name: check
         description: Newly uploaded patchsets enter this pipeline to get an initial +1/-1 from Jenkins
-        success-message: Build succeeded (check pipeline)
-        failure-message: Build failed :-( (check pipeline)
+        success-message: Build succeeded (check pipeline).
+        failure-message: Build failed (check pipeline). Please check the logs referenced below. For more information on how to proceed, please see https://wiki.asterisk.org/wiki/display/AST/Continuous+Integration
         manager: IndependentPipelineManager
         source: gerrit
         precedence: normal
@@ -25,8 +25,8 @@ pipelines:
     -
         name: gate
         description: Changes that have been approved by mergers are enqueued in this pipeline.
-        success-message: Build succeeded (gate pipeline)
-        failure-message: Build failed :-( (gate pipeline)
+        success-message: Build succeeded (gate pipeline).
+        failure-message: Build failed (gate pipeline). Please check the logs referenced below. For more information on how to proceed, please see https://wiki.asterisk.org/wiki/display/AST/Continuous+Integration
         manager: DependentPipelineManager
         source: gerrit
         precedence: high
@@ -36,24 +36,19 @@ pipelines:
             approval:
                 -
                     verified: [1, 2]
-                    username: zuul
         trigger:
             gerrit:
                 -
                     event: comment-added
                     approval:
-                        - verified: 1
-                    username: zuul
-        start:
-            gerrit:
-                verified: 0
+                        - code-review: 2
         success:
             gerrit:
                 verified: 2
                 submit: true
         failure:
             gerrit:
-                verified: 0
+                verified: -1
         window-floor: 20
         window-increase-factor: 2
     -
@@ -104,7 +99,6 @@ pipelines:
             approval:
                 -       
                     verified: [1, 2]
-                    username: jenkins
         trigger:
             zuul:
                 - event: project-change-merged
@@ -129,6 +123,9 @@ project-templates:
             - 'check-asterisk'
         gate:
             - 'gate-asterisk'
+            - 'gate-asterisk-channel-drivers'
+            - 'gate-asterisk-external-mwi'
+            - 'gate-asterisk-ari'
 
 projects:
 #    -

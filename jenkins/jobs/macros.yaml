@@ -34,18 +34,30 @@
     builders:
         - shell: |
             #!/bin/bash
-            sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh -v
+            sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh {build-asterisk-params}
 
 - builder:
     name: run-asterisk-unittests
+    build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
     builders:
-        - shell: |
-            #!/bin/bash
-            sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh -v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH
+        - build-asterisk
         - shell: |
             #!/bin/bash
             /srv/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
 
+- builder:
+    name: prep-testsuite
+    builders:
+        - shell: |
+            #!/bin/bash
+            /srv/git/infrastructure/jenkins/scripts/prep-testsuite.sh https://gerrit.asterisk.org
+
+- builder:
+    name: run-testsuite
+    builders:
+        - shell: |
+            #!/bin/bash
+            /srv/git/infrastructure/jenkins/scripts/run-testsuite.sh {testsuite-params}
 
 - builder:
     name: python-coverage
@@ -60,4 +72,22 @@
             export PYTHON_DIR={python_dir}
             export PEP8_OUTPUT={pep8_output}
             /srv/git/infrastructure/jenkins/scripts/run-pep8.sh
+
+###############################################################################
+# Project publishing routines
+###############################################################################
+
+- publisher:
+    name: publish-asterisk-unittests
+    publishers:
+       - junit:
+           results: '{name}/test-reports/*.xml'
+           test-stability: true
+
+- publisher:
+     name: publish-asterisk-testsuite
+     publishers:
+       - junit:
+           results: 'testsuite/asterisk-test-suite-report.xml'
+           test-stability: true
 

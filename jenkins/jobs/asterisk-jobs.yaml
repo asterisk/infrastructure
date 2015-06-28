@@ -12,13 +12,11 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - build-asterisk
         - run-asterisk-unittests
 
     publishers:
-        - junit:
-            results: '{name}/test-reports/*.xml'
-            test-stability: true
+        - publish-asterisk-unittests
+
 
 - job-template:
     name: 'gate-{name}'
@@ -34,12 +32,89 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - build-asterisk
         - run-asterisk-unittests
+
+    publishers:
+        - publish-asterisk-unittests
+
+
+- job-template:
+    name: 'gate-{name}-channel-drivers'
+    node: 'centos || debian'
+    testsuite-params: '-t tests/channels'
+    build-asterisk-params: '-v -e DO_CRASH'
+
+    wrappers:
+        - timeout:
+            timeout: 60
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep
+        - build-asterisk
+        - prep-testsuite
+        - run-testsuite
+
+    publishers:
+        - publish-asterisk-testsuite
+
+
+- job-template:
+    name: 'gate-{name}-external-mwi'
+    node: 'centos || debian'
+    testsuite-params: '-g mwi_external'
+    build-asterisk-params: '-v -d app_voicemail -e res_mwi_external -e res_mwi_external_ami -e res_stasis_mailbox -e DO_CRASH'
+
+    wrappers:
+        - timeout:
+            timeout: 60
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep
+        - build-asterisk
+        - prep-testsuite
+        - run-testsuite
+
+    publishers:
+        - publish-asterisk-testsuite
+
+
+- job-template:
+    name: 'gate-{name}-ari'
+    node: 'centos || debian'
+    testsuite-params: '-g ARI'
+    build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
+    wrappers:
+        - timeout:
+            timeout: 60
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep
+        - build-asterisk
+        - prep-testsuite
+        - run-testsuite
+
+    publishers:
+        - publish-asterisk-testsuite
+
 
 - job-group:
     name: asterisk-jobs
     jobs:
         - 'check-{name}'
         - 'gate-{name}'
+        - 'gate-{name}-channel-drivers'
+        - 'gate-{name}-external-mwi'
+        - 'gate-{name}-ari'
 
