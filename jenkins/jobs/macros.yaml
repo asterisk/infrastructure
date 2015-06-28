@@ -81,7 +81,7 @@
     name: publish-asterisk-unittests
     publishers:
        - junit:
-           results: '{name}/test-reports/*.xml'
+           results: '{project-name}/test-reports/*.xml'
            test-stability: true
 
 - publisher:

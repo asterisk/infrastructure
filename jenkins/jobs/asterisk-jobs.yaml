@@ -15,7 +15,8 @@
         - run-asterisk-unittests
 
     publishers:
-        - publish-asterisk-unittests
+        - publish-asterisk-unittests:
+            project-name: {name}
 
 
 - job-template:
@@ -35,7 +36,8 @@
         - run-asterisk-unittests
 
     publishers:
-        - publish-asterisk-unittests
+        - publish-asterisk-unittests:
+            project-name: {name}
 
 
 - job-template:
