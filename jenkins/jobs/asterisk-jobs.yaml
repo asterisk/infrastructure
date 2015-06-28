@@ -16,7 +16,7 @@
 
     publishers:
         - publish-asterisk-unittests:
-            project-name: {name}
+            project-name: '{name}'
 
 
 - job-template:
@@ -37,7 +37,7 @@
 
     publishers:
         - publish-asterisk-unittests:
-            project-name: {name}
+            project-name: '{name}'
 
 
 - job-template:
