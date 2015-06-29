@@ -57,7 +57,7 @@
     builders:
         - shell: |
             #!/bin/bash
-            /srv/git/infrastructure/jenkins/scripts/run-testsuite.sh {testsuite-params}
+            /srv/git/infrastructure/jenkins/scripts/run-testsuite.sh "{testsuite-params}"
 
 - builder:
     name: python-coverage
