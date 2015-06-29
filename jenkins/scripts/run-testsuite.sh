@@ -20,8 +20,16 @@
 
 TESTSUITE_ARGS=$1
 
+CI_USER=jenkins
+CI_GROUP=users
+
 if [ ! -f /usr/sbin/asterisk ]; then
 	echo "ERROR: Asterisk not installed."
+	exit 1
+fi
+
+if [ "$(id -u)" != "0" ]; then
+	echo "ERROR: run-testsuite must be run as 'root'."
 	exit 1
 fi
 
@@ -31,4 +39,9 @@ echo "*** Running tests against $ASTERISK_VER ***"
 pushd testsuite
 ./runtests.py $TESTSUITE_ARGS
 popd
+
+# Drop the permissions down on the testsuite and /tmp directory
+# for other scripts
+chown -R ${CI_USER}:${CI_GROUP} testsuite
+chown -R ${CI_USER}:${CI_GROUP} /tmp/asterisk-testsuite
 
