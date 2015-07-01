@@ -90,7 +90,7 @@
        - junit:
            results: 'testsuite/asterisk-test-suite-report.xml'
            test-stability: true
-       - artifacts:
+       - archive:
            allow-empty: True
            artifacts: 'testsuite/logs.tar.gz'
            latest-only: False
