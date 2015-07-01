@@ -38,6 +38,12 @@ ASTERISK_VER=$(asterisk -V)
 echo "*** Running tests against $ASTERISK_VER ***"
 pushd testsuite
 ./runtests.py $TESTSUITE_ARGS
+
+# Archive the logs
+if [ -d ./logs ]; then
+	tar -zcvf logs.tar.gz asterisk-test-suite-report.xml logs
+fi
+
 popd
 
 # Drop the permissions down on the testsuite and /tmp directory
