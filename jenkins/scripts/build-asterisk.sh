@@ -76,7 +76,7 @@ if [ "`uname`" = "FreeBSD" ] && [ "`uname -m`" = "i386" ] ; then
 	ASTCFLAGS=-march=i686
 fi
 
-export PATH="$PATH:/usr/lib/ccache:/usr/local/bin:/usr/sbin:/usr/local/sbin"
+export PATH="/usr/lib/ccache:$PATH:/usr/local/bin:/usr/sbin:/usr/local/sbin"
 echo "PATH has been set to: ${PATH}"
 
 # This probably should be set up in the machine configuration
