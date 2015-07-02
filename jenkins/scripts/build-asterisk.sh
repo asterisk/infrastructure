@@ -117,9 +117,6 @@ if [ -d cel ] ; then
 	menuselect/menuselect --enable-category MENUSELECT_CEL menuselect.makeopts
 fi
 
-# Disable chan_vpb, because it is "not so good"
-menuselect/menuselect --disable chan_vpb menuselect.makeopts
-
 menuselect/menuselect --enable-category MENUSELECT_CDR menuselect.makeopts
 menuselect/menuselect --enable-category MENUSELECT_CHANNELS menuselect.makeopts
 menuselect/menuselect --enable-category MENUSELECT_CODECS menuselect.makeopts
@@ -137,6 +134,9 @@ done
 for ((i=0; i<${#ARR_DISABLES[@]}; ++i)); do
 	menuselect/menuselect --disable "${ARR_DISABLES[$i]}" menuselect.makeopts
 done
+
+# Disable chan_vpb, because it is "not so good"
+menuselect/menuselect --disable chan_vpb menuselect.makeopts
 
 ${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS}
 
