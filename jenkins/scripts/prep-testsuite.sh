@@ -25,6 +25,10 @@ if [ -z "$GERRIT_SITE" ]; then
     exit 1
 fi
 
+if [ -d /tmp/asterisk-testsuite ]; then
+    rm -fr /tmp/asterisk-testsuite/
+fi
+
 if [ ! -d ./testsuite ]; then
     git clone $GERRIT_SITE/testsuite testsuite
 fi
