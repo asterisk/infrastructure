@@ -12,13 +12,6 @@
         - testsuite-jobs
 
 - project:
-    name: 'TEST-asterisk'
-    node: 'centos || debian'
-
-    jobs:
-        - asterisk-jobs
-
-- project:
     name: 'asterisk'
     node: 'centos || debian'
 

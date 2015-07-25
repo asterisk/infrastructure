@@ -139,11 +139,6 @@ projects:
 #        gate:
 #            - testsuite-gate
     -
-        name: 'TEST-Asterisk'
-        template:
-            - name: 'merge-check'
-            - name: 'asterisk-jobs'
-    -
         name: 'asterisk'
         template:
             - name: 'merge-check'
