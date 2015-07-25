@@ -129,11 +129,11 @@ project-templates:
             - 'gate-asterisk-ari'
 
 projects:
-#    -
-#        name: 'testsuite'
-#        template:
-#            - name: 'merge-check'
-#            - name: 'python-jobs'
+    -
+        name: 'testsuite'
+        template:
+            - name: 'merge-check'
+            - name: 'python-jobs'
 #        check:
 #            - testsuite-gate
 #        gate:
