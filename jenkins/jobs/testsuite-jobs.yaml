@@ -13,7 +13,6 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - ru
         - shell: |
             #!/bin/bash
             sudo /srv/git/infrastructure/jenkins/scripts/run-testsuite-unittests.sh
