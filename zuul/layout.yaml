@@ -39,8 +39,8 @@ pipelines:
         trigger:
             gerrit:
                 - event: comment-added
-                    approval:
-                        - code-review: 2
+                  approval:
+                    - code-review: 2
                 - event: comment-added
                   comment: (?i)^(Patch Set [0-9]+:)?( [\w\\+-]*)*(\n\n)?\s*(regate)
         success:
