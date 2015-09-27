@@ -31,7 +31,7 @@
 
     publishers:
         - publish-pep8-results:
-            pep8_output: './{name}-pep8.txt'
+            pep8_output: '{name}-pep8.txt'
 
     node: '{node}'
 
