@@ -20,12 +20,18 @@
     node: '{node}'
 
 - job-template:
-    name: gate-{name}-pep8
+    name: check-{name}-pep8
 
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - pep8
+        - pep8:
+            python_dir: './{name}/'
+            pep8_output: './{name}-pep8.txt'
+
+    publishers:
+        - publish-pep8-results:
+            pep8_output: './{name}-pep8.txt'
 
     node: '{node}'
 
@@ -33,5 +39,5 @@
     name: python-jobs
     jobs:
         - '{name}-coverage'
-        - 'gate-{name}-pep8'
+        - 'check-{name}-pep8'
 

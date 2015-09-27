@@ -94,3 +94,12 @@
            allow-empty: True
            artifacts: 'testsuite/logs.tar.gz'
            latest-only: False
+
+- publisher:
+     name: publish-pep8-results
+     publishers:
+       - archive:
+           allow-empty: True
+           artifacts: '{pep8_output}'
+           latest-only: False
+
