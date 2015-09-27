@@ -115,9 +115,13 @@ project-templates:
     -
         name: python-jobs
         check:
-            - 'gate-{name}-pep8'
+            - 'check-{name}-pep8'
+    -
+        name: testsuite-jobs
+        check:
+            - 'check-testsuite'
         gate:
-            - 'gate-{name}-pep8'
+            - 'gate-testsuite'
     -
         name: asterisk-jobs
         check:
@@ -127,6 +131,8 @@ project-templates:
             - 'gate-asterisk-channel-drivers'
             - 'gate-asterisk-external-mwi'
             - 'gate-asterisk-ari'
+        periodic-stable:
+            - 'check-asterisk'
 
 projects:
     -
@@ -134,10 +140,7 @@ projects:
         template:
             - name: 'merge-check'
             - name: 'python-jobs'
-#        check:
-#            - testsuite-gate
-#        gate:
-#            - testsuite-gate
+            - name: 'testsuite-jobs'
     -
         name: 'asterisk'
         template:
