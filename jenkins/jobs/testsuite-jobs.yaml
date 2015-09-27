@@ -1,5 +1,24 @@
 
 - job:
+    name: check-testsuite
+    node: 'centos || debian'
+
+    wrappers:
+        - timeout:
+            timeout: 60
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep
+        - ru
+        - shell: |
+            #!/bin/bash
+            sudo /srv/git/infrastructure/jenkins/scripts/run-testsuite-unittests.sh
+
+- job:
     name: gate-testsuite
     node: 'centos || debian'
 
@@ -13,15 +32,14 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - shell: "/srv/git/infrastructure/jenkins/scripts/run-testsuite-unittests.sh" 
-
-    publishers:
-        - archive:
-            artifacts: 'logs/*'
+        - shell: |
+            #!/bin/bash
+            sudo /srv/git/infrastructure/jenkins/scripts/run-testsuite-unittests.sh
 
 - job-group:
     name: testsuite-jobs
     jobs:
+        - check-testsuite
         - gate-testsuite
 
 
