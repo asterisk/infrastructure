@@ -36,6 +36,7 @@ CI_GROUP=users
 
 PWD=`pwd`
 BUILDFLAGS="NOISY_BUILD=yes"
+BUILDJOBS=$[`nproc` + 1]
 
 if [ -n "$ZUUL_PROJECT" ]; then
 	PROJECT=$ZUUL_PROJECT
@@ -138,7 +139,7 @@ done
 # Disable chan_vpb, because it is "not so good"
 menuselect/menuselect --disable chan_vpb menuselect.makeopts
 
-${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS}
+${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS} -j${BUILDJOBS}
 
 if [ -f doc/core-en_US.xml ] ; then
 	echo "*** Validating XML documentation ***"
