@@ -49,5 +49,5 @@ popd
 # Drop the permissions down on the testsuite and /tmp directory
 # for other scripts
 chown -R ${CI_USER}:${CI_GROUP} testsuite
-chown -R ${CI_USER}:${CI_GROUP} /tmp/asterisk-testsuite
+chown -R ${CI_USER}:${CI_GROUP} /tmp/asterisk-testsuite || true
 
