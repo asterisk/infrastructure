@@ -1,4 +1,29 @@
 - job-template:
+    name: 'periodic-{name}-{branch}'
+    node: 'centos || debian'
+
+    wrappers:
+        - timeout:
+            timeout: 300
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep:
+            branch: '{branch}'
+        - prep-testsuite
+        - run-asterisk-unittests
+        - run-testsuite
+
+    publishers:
+        - publish-asterisk-unittests:
+            project-name: '{name}'
+        - publish-asterisk-testsuite
+
+
+- job-template:
     name: 'check-{name}'
     node: 'centos || debian'
 
@@ -119,4 +144,4 @@
         - 'gate-{name}-channel-drivers'
         - 'gate-{name}-external-mwi'
         - 'gate-{name}-ari'
-
+        - 'periodic-{name}-{branch}'

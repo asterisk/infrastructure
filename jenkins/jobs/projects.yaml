@@ -14,7 +14,10 @@
 - project:
     name: 'asterisk'
     node: 'centos || debian'
-
+    branch:
+        - '11'
+        - '13'
+        - 'master'
     jobs:
         - asterisk-jobs
 
