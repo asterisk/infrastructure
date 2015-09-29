@@ -52,6 +52,7 @@ fi
 git fetch origin master
 git checkout master
 git reset --hard master
+git pull
 
 popd
 
