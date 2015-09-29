@@ -107,6 +107,12 @@ pipelines:
             gerrit:
                 verified: -1
 
+jobs:
+    - name: 'gate-asterisk-ari'
+      branch: '(12|13|master)'
+    - name: 'gate-asterisk-external-mwi'
+      branch: '(12|13|master)'
+
 project-templates:
     -
         name: merge-check
@@ -131,8 +137,10 @@ project-templates:
             - 'gate-asterisk-channel-drivers'
             - 'gate-asterisk-external-mwi'
             - 'gate-asterisk-ari'
+    -
+        name: periodic-asterisk
         periodic-stable:
-            - 'check-asterisk'
+            - 'periodic-{name}-{branch}'
 
 projects:
     -
@@ -146,4 +154,9 @@ projects:
         template:
             - name: 'merge-check'
             - name: 'asterisk-jobs'
-
+            - name: 'periodic-asterisk'
+              branch: '11'
+            - name: 'periodic-asterisk'
+              branch: '13'
+            - name: 'periodic-asterisk'
+              branch: 'master'
