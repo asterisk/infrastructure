@@ -58,6 +58,7 @@ if [ -z "$ZUUL_REF" ]; then
 fi
 
 if [ -z "$ZUUL_PROJECT" ]; then
+    echo "No $ZUUL_PROJECT specified; using $PROJECT"
     if [ -n "$PROJECT" ]; then
         echo "No ZUUL_PROJECT so using requested $PROJECT from origin."
         ZUUL_PROJECT=$PROJECT
