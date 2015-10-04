@@ -13,6 +13,7 @@
         - node-git-prep
         - gerrit-git-prep:
             branch: '{branch}'
+            project: '{name}'
         - prep-testsuite
         - run-asterisk-unittests
         - run-testsuite

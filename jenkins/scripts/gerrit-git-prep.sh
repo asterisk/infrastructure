@@ -57,7 +57,16 @@ if [ -z "$ZUUL_REF" ]; then
     fi
 fi
 
-echo $ZUUL_URL
+if [ -z "$ZUUL_PROJECT" ]; then
+    if [ -n "$PROJECT" ]; then
+        echo "No ZUUL_PROJECT so using requested $PROJECT from origin."
+        ZUUL_PROJECT=$PROJECT
+    else
+        echo "Provide either ZUUL_PROJECT or PROJECT in the calling environment."
+        exit 1
+    fi
+fi
+
 if [ -z "$ZUUL_URL" ]; then
     echo "The ZUUL_URL must be provided."
     exit 1

@@ -27,6 +27,7 @@
         - shell: |
             #!/bin/bash
             export BRANCH={branch}
+            export project={project}
             sudo /srv/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org https://gerrit.asterisk.org asterisk
 
 - builder:
