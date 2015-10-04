@@ -31,6 +31,7 @@ echo "  BRANCH => $BRANCH"
 echo "  ZUUL_URL => $ZUUL_URL"
 echo "  ZUUL_REF => $ZUUL_REF"
 echo "  ZUUL_NEWREV => $ZUUL_NEWREV"
+echo "  ZUUL_PROJECT => $ZUUL_PROJECT"
 echo
 
 if [ -z "$GERRIT_SITE" ]; then
