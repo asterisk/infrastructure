@@ -38,12 +38,6 @@ if [ -z "$GERRIT_SITE" ]; then
     exit 1
 fi
 
-echo $ZUUL_URL
-if [ -z "$ZUUL_URL" ]; then
-    echo "The ZUUL_URL must be provided."
-    exit 1
-fi
-
 if [ -z "$GIT_ORIGIN" ] || [ -n "$ZUUL_NEWREV" ]; then
     GIT_ORIGIN="$GERRIT_SITE/p"
     # git://git.openstack.org/
@@ -60,6 +54,12 @@ if [ -z "$ZUUL_REF" ]; then
         echo "Provide either ZUUL_REF or BRANCH in the calling enviromnent."
         exit 1
     fi
+fi
+
+echo $ZUUL_URL
+if [ -z "$ZUUL_URL" ]; then
+    echo "The ZUUL_URL must be provided."
+    exit 1
 fi
 
 if [ ! -z "$ZUUL_CHANGE" ]; then
