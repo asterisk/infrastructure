@@ -24,6 +24,15 @@ if [ -z "$CLEAN_DIR" ]; then
     CLEAN_DIR=0
 fi
 
+echo "Running with the following parameters:"
+echo "  GERRIT_SITE => $GERRIT_SITE"
+echo "  GIT_ORIGIN => $GIT_ORIGIN"
+echo "  BRANCH => $BRANCH"
+echo "  ZUUL_URL => $ZUUL_URL"
+echo "  ZUUL_REF => $ZUUL_REF"
+echo "  ZUUL_NEWREV => $ZUUL_NEWREV"
+echo
+
 if [ -z "$GERRIT_SITE" ]; then
     echo "The gerrit site name (eg 'https://review.openstack.org') must be the first argument."
     exit 1
@@ -34,15 +43,6 @@ if [ -z "$ZUUL_URL" ]; then
     echo "The ZUUL_URL must be provided."
     exit 1
 fi
-
-echo "Running with the following parameters:"
-echo "  GERRIT_SITE => $GERRIT_SITE"
-echo "  GIT_ORIGIN => $GIT_ORIGIN"
-echo "  BRANCH => $BRANCH"
-echo "  ZUUL_URL => $ZUUL_URL"
-echo "  ZUUL_REF => $ZUUL_REF"
-echo "  ZUUL_NEWREV => $ZUUL_NEWREV"
-echo
 
 if [ -z "$GIT_ORIGIN" ] || [ -n "$ZUUL_NEWREV" ]; then
     GIT_ORIGIN="$GERRIT_SITE/p"
