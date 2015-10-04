@@ -27,7 +27,9 @@
         - shell: |
             #!/bin/bash
             export BRANCH={branch}
-            export PROJECT={project}
+            if [ -z "$ZUUL_PROJECT" ]; then
+                ZUUL_PROJECT={project}
+            fi
             sudo /srv/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org https://gerrit.asterisk.org asterisk
 
 - builder:
