@@ -4,6 +4,7 @@
 
 - job-template:
     name: '{name}-python-coverage'
+    concurrent: true
 
     wrappers:
         - timeout:
@@ -21,6 +22,7 @@
 
 - job-template:
     name: check-{name}-pep8
+    concurrent: true
 
     builders:
         - node-git-prep

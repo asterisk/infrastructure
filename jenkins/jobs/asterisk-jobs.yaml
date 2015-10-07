@@ -1,6 +1,7 @@
 - job-template:
     name: 'periodic-{name}-{branch}'
     node: 'centos || debian'
+    concurrent: true
 
     wrappers:
         - timeout:
@@ -27,6 +28,7 @@
 - job-template:
     name: 'check-{name}'
     node: 'centos || debian'
+    concurrent: true
 
     wrappers:
         - timeout:
@@ -48,6 +50,7 @@
 - job-template:
     name: 'gate-{name}'
     node: 'centos || debian'
+    concurrent: true
 
     wrappers:
         - timeout:
@@ -69,6 +72,7 @@
 - job-template:
     name: 'gate-{name}-channel-drivers'
     node: 'centos || debian'
+    concurrent: true
 
     wrappers:
         - timeout:
@@ -93,6 +97,7 @@
 - job-template:
     name: 'gate-{name}-external-mwi'
     node: 'centos || debian'
+    concurrent: true
 
     wrappers:
         - timeout:
@@ -117,6 +122,8 @@
 - job-template:
     name: 'gate-{name}-ari'
     node: 'centos || debian'
+    concurrent: true
+
     wrappers:
         - timeout:
             timeout: 60

@@ -2,6 +2,7 @@
 - job:
     name: check-testsuite
     node: 'centos || debian'
+    concurrent: true
 
     wrappers:
         - timeout:
@@ -20,6 +21,7 @@
 - job:
     name: gate-testsuite
     node: 'centos || debian'
+    concurrent: true
 
     wrappers:
         - timeout:
