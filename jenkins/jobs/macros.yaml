@@ -43,7 +43,7 @@
     name: run-asterisk-unittests
     builders:
         - build-asterisk:
-            build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
+            build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH {build-asterisk-params}'
         - shell: |
             #!/bin/bash
             /srv/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
