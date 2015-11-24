@@ -41,6 +41,9 @@ pushd testsuite
 
 # Archive the logs
 if [ -d ./logs ]; then
+	if [ -n $REF_DEBUG ]; then
+		./contrib/scripts/refleaks-summary > logs/refleaks-summary.txt
+	fi
 	tar -zcvf logs.tar.gz asterisk-test-suite-report.xml logs
 fi
 
