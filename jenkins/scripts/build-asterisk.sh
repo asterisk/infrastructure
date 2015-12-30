@@ -125,6 +125,8 @@ menuselect/menuselect --enable-category MENUSELECT_FORMATS menuselect.makeopts
 menuselect/menuselect --enable-category MENUSELECT_FUNCS menuselect.makeopts
 menuselect/menuselect --enable-category MENUSELECT_PBX menuselect.makeopts
 menuselect/menuselect --enable-category MENUSELECT_RES menuselect.makeopts
+menuselect/menuselect --disable res_mwi_external menuselect.makeopts
+
 if grep -q MENUSELECT_UTILS menuselect.makeopts ; then
 	menuselect/menuselect --enable-category MENUSELECT_UTILS menuselect.makeopts
 fi
