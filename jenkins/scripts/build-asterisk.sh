@@ -86,6 +86,36 @@ ulimit -n 32767
 echo ${PROJECT}
 pushd ${PROJECT}
 
+# If the configuration sample exists then all alembic samples should exist
+if [ -f contrib/ast-db-manage/config.ini.sample ]; then
+	if [ -f /usr/bin/alembic ]; then
+		pushd contrib/ast-db-manage
+		# Ensure no old .pyc files remain around to skew results
+		rm -rf config/*.pyc cdr/*.pyc voicemail/*.pyc
+		BRANCHES=$(alembic -c config.ini.sample branches)
+		if [ -n "$BRANCHES" ]; then
+			echo "Alembic branches exist for configuration - details follow"
+			echo $BRANCHES
+			exit 1
+		fi
+		BRANCHES=$(alembic -c cdr.ini.sample branches)
+		if [ -n "$BRANCHES" ]; then
+			echo "Alembic branches exist for CDR - details follow"
+			echo $BRANCHES
+			exit 1
+		fi
+		BRANCHES=$(alembic -c voicemail.ini.sample branches)
+		if [ -n "$BRANCHES" ]; then
+			echo "Alembic branches exist for voicemail - details follow"
+			echo $BRANCHES
+			exit 1
+		fi
+		popd
+	else
+		echo "Alembic is unavailable - unable to perform branch checking"
+	fi
+fi
+
 # Test distclean
 ${MAKE} ${BUILDFLAGS} distclean
 
