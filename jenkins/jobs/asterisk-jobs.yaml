@@ -42,10 +42,9 @@
         - gerrit-git-prep:
             branch: '{branch}'
             project: '{name}'
-        - build-asterisk:
-            build-asterisk-params: '-e REF_DEBUG'
         - prep-testsuite
-        - run-asterisk-unittests
+        - run-asterisk-unittests:
+            build-asterisk-params: '-e REF_DEBUG'
         - run-testsuite
 
     publishers:
