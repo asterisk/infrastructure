@@ -14,6 +14,7 @@ pipelines:
             gerrit:
                 - event: patchset-created
                 - event: change-restored
+                - event: draft-published
                 - event: comment-added
                   comment: (?i)^(Patch Set [0-9]+:)?( [\w\\+-]*)*(\n\n)?\s*(recheck|reverify)
         success:
