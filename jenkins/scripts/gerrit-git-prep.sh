@@ -116,7 +116,11 @@ if echo "$ZUUL_REF" | grep -q ^refs/tags/; then
     git checkout $ZUUL_REF
     git reset --hard $ZUUL_REF
 elif [ -z "$ZUUL_NEWREV" ]; then
-    git fetch $ZUUL_URL/$ZUUL_PROJECT $ZUUL_REF
+    if [ "$ZUUL_URL" == "$GIT_ORIGIN" ]; then
+        git fetch $ZUUL_URL/$ZUUL_PROJECT/$ZUUL_PROJECT.git $ZUUL_REF
+    else
+        git fetch $ZUUL_URL/$ZUUL_PROJECT $ZUUL_REF
+    fi
     git checkout FETCH_HEAD
     git reset --hard FETCH_HEAD
 else
