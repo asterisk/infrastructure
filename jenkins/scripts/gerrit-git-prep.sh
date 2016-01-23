@@ -89,14 +89,14 @@ if [[ ! -e $ZUUL_PROJECT/.git ]]; then
     if [ -d /opt/git/$ZUUL_PROJECT/.git ]; then
         git clone file:///opt/git/$ZUUL_PROJECT $ZUUL_PROJECT
     else
-        git clone $GERRIT_SITE/$ZUUL_PROJECT $ZUUL_PROJECT
+        git clone $GIT_ORIGIN/$ZUUL_PROJECT/$ZUUL_PROJECT.git $ZUUL_PROJECT
     fi
 fi
 
 chown -R $CI_USER:$CI_GROUP $ZUUL_PROJECT
 pushd $ZUUL_PROJECT
 
-git remote set-url origin $GERRIT_SITE/$ZUUL_PROJECT
+git remote set-url origin $GIT_ORIGIN/$ZUUL_PROJECT/$ZUUL_PROJECT.git
 
 # attempt to work around bugs 925790 and 1229352
 if ! git remote update; then
