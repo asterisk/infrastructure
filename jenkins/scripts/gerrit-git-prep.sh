@@ -89,14 +89,14 @@ if [[ ! -e $ZUUL_PROJECT/.git ]]; then
     if [ -d /opt/git/$ZUUL_PROJECT/.git ]; then
         git clone file:///opt/git/$ZUUL_PROJECT $ZUUL_PROJECT
     else
-        git clone $GIT_ORIGIN/$ZUUL_PROJECT/$ZUUL_PROJECT.git $ZUUL_PROJECT
+        git clone $GIT_ORIGIN/asterisk/$ZUUL_PROJECT.git $ZUUL_PROJECT
     fi
 fi
 
 chown -R $CI_USER:$CI_GROUP $ZUUL_PROJECT
 pushd $ZUUL_PROJECT
 
-git remote set-url origin $GIT_ORIGIN/$ZUUL_PROJECT/$ZUUL_PROJECT.git
+git remote set-url origin $GIT_ORIGIN/asterisk/$ZUUL_PROJECT.git
 
 # attempt to work around bugs 925790 and 1229352
 if ! git remote update; then
@@ -117,7 +117,7 @@ if echo "$ZUUL_REF" | grep -q ^refs/tags/; then
     git reset --hard $ZUUL_REF
 elif [ -z "$ZUUL_NEWREV" ]; then
     if [ "$ZUUL_URL" == "$GIT_ORIGIN" ]; then
-        git fetch $ZUUL_URL/$ZUUL_PROJECT/$ZUUL_PROJECT.git $ZUUL_REF
+        git fetch $ZUUL_URL/asterisk/$ZUUL_PROJECT.git $ZUUL_REF
     else
         git fetch $ZUUL_URL/$ZUUL_PROJECT $ZUUL_REF
     fi
