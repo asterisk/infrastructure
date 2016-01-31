@@ -97,6 +97,10 @@
            allow-empty: True
            artifacts: 'testsuite/logs.tar.gz'
            latest-only: False
+       - archive:
+           allow-empty: True
+           artifacts: 'testsuite/refleaks-summary.tar.gz'
+           latest-only: False
 
 - publisher:
      name: publish-pep8-results

@@ -44,6 +44,10 @@ if [ -d ./logs ]; then
 	tar -zcvf logs.tar.gz asterisk-test-suite-report.xml logs
 fi
 
+if [ -f ./logs/refleaks-summary.txt ]; then
+	tar -czvf refleaks-summary.tar.gz logs/refleaks-summary.txt
+fi
+
 popd
 
 # Drop the permissions down on the testsuite and /tmp directory
