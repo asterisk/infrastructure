@@ -53,7 +53,7 @@
     builders:
         - shell: |
             #!/bin/bash
-            /srv/git/infrastructure/jenkins/scripts/prep-testsuite.sh https://gerrit.asterisk.org
+            /srv/git/infrastructure/jenkins/scripts/prep-testsuite.sh git://git.asterisk.org
 
 - builder:
     name: run-testsuite

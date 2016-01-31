@@ -18,10 +18,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-GERRIT_SITE=$1
+GIT_ORIGIN=$1
 
-if [ -z "$GERRIT_SITE" ]; then
-    echo "The gerrit site name (eg 'https://gerrit.asterisk.org') must be the first argument."
+if [ -z "$GIT_ORIGIN" ]; then
+    echo "The git origin must be the first argument."
     exit 1
 fi
 
@@ -30,12 +30,12 @@ if [ -d /tmp/asterisk-testsuite ]; then
 fi
 
 if [ ! -d ./testsuite ]; then
-    git clone $GERRIT_SITE/testsuite testsuite
+    git clone $GIT_ORIGIN/asterisk/testsuite.git testsuite
 fi
 
 pushd testsuite
 
-git remote set-url origin $GERRIT_SITE/testsuite
+git remote set-url origin $GIT_ORIGIN/asterisk/testsuite.git
 
 if ! git remote update; then
     echo "The remote update failed, so garbage collecting before trying again."
