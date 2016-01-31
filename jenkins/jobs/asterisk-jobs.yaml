@@ -24,6 +24,31 @@
             project-name: '{name}'
         - publish-asterisk-testsuite
 
+- job-template:
+    name: 'periodic-realtime-{name}-{branch}'
+    node: 'centos || debian'
+    concurrent: true
+
+    wrappers:
+        - timeout:
+            timeout: 300
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep:
+            branch: '{branch}'
+            project: '{name}'
+        - prep-testsuite
+        - run-asterisk-unittests
+        - run-testsuite
+
+    publishers:
+        - publish-asterisk-unittests:
+            project-name: '{name}'
+        - publish-asterisk-testsuite
 
 - job-template:
     name: 'periodic-ref_debug-{name}-{branch}'
@@ -181,4 +206,5 @@
         - 'gate-{name}-external-mwi'
         - 'gate-{name}-ari'
         - 'periodic-{name}-{branch}'
+        - 'periodic-realtime-{name}-{branch}'
         - 'periodic-ref_debug-{name}-{branch}'
