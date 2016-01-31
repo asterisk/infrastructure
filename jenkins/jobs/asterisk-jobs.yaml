@@ -2,6 +2,7 @@
     name: 'periodic-{name}-{branch}'
     node: 'centos || debian'
     concurrent: true
+    description: 'Periodic full testsuite run for {name} using {branch} branch'
 
     wrappers:
         - timeout:
@@ -23,6 +24,10 @@
         - publish-asterisk-unittests:
             project-name: '{name}'
         - publish-asterisk-testsuite
+
+    logrotate:
+        daysToKeep: 31
+        artifactDaysToKeep: 31
 
 - job-template:
     name: 'periodic-realtime-{name}-{branch}'
