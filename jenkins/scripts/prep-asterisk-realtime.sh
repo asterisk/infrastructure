@@ -82,7 +82,7 @@ datefmt = %H:%M:%S
 EOF
 
 echo "Creating database tables"
-alembic -c config.ini upgrade HEAD
+alembic -c config.ini upgrade head
 
 rm -rf config.ini
 
