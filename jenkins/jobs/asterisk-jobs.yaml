@@ -48,6 +48,7 @@
             project: '{name}'
         - prep-testsuite
         - run-asterisk-unittests
+        - prep-asterisk-realtime
         - run-testsuite
 
     publishers:

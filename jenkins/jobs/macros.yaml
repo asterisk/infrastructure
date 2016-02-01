@@ -40,6 +40,13 @@
             sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh {build-asterisk-params}
 
 - builder:
+    name: prep-asterisk-realtime
+    builders:
+        - shell: |
+            #!/bin/bash
+            sudo /srv/git/infrastructure/jenkins/scripts/prep-asterisk-realtime.sh asterisk 127.0.0.1 asterisk
+
+- builder:
     name: run-asterisk-unittests
     builders:
         - build-asterisk:
