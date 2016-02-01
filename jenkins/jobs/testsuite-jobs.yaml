@@ -18,6 +18,10 @@
             #!/bin/bash
             sudo /srv/git/infrastructure/jenkins/scripts/run-testsuite-unittests.sh
 
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
+
 - job:
     name: gate-testsuite
     node: 'centos || debian'
@@ -36,6 +40,10 @@
         - shell: |
             #!/bin/bash
             sudo /srv/git/infrastructure/jenkins/scripts/run-testsuite-unittests.sh
+
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
 
 - job-group:
     name: testsuite-jobs

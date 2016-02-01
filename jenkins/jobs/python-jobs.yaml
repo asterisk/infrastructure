@@ -20,6 +20,10 @@
 
     node: '{node}'
 
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
+
 - job-template:
     name: check-{name}-pep8
     concurrent: true
@@ -36,6 +40,10 @@
             pep8_output: '{name}-pep8.txt'
 
     node: '{node}'
+
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
 
 - job-group:
     name: python-jobs

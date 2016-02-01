@@ -59,6 +59,10 @@
             project-name: '{name}'
         - publish-asterisk-testsuite
 
+    logrotate:
+        daysToKeep: 31
+        artifactDaysToKeep: 31
+
 - job-template:
     name: 'periodic-ref_debug-{name}-{branch}'
     node: 'centos || debian'
@@ -86,6 +90,10 @@
             project-name: '{name}'
         - publish-asterisk-testsuite
 
+    logrotate:
+        daysToKeep: 31
+        artifactDaysToKeep: 31
+
 
 - job-template:
     name: 'check-{name}'
@@ -108,6 +116,9 @@
         - publish-asterisk-unittests:
             project-name: '{name}'
 
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
 
 - job-template:
     name: 'gate-{name}'
@@ -130,6 +141,9 @@
         - publish-asterisk-unittests:
             project-name: '{name}'
 
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
 
 - job-template:
     name: 'gate-{name}-channel-drivers'
@@ -155,6 +169,9 @@
     publishers:
         - publish-asterisk-testsuite
 
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
 
 - job-template:
     name: 'gate-{name}-external-mwi'
@@ -180,6 +197,9 @@
     publishers:
         - publish-asterisk-testsuite
 
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
 
 - job-template:
     name: 'gate-{name}-ari'
@@ -205,6 +225,9 @@
     publishers:
         - publish-asterisk-testsuite
 
+    logrotate:
+        daysToKeep: 7
+        artifactDaysToKeep: 7
 
 - job-group:
     name: asterisk-jobs
