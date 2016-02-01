@@ -51,6 +51,7 @@
         - run-asterisk-unittests
         - prep-asterisk-realtime
         - run-testsuite
+            testsuite-params: '-t tests/channels/pjsip'
 
     publishers:
         - publish-asterisk-unittests:
