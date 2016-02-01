@@ -42,7 +42,7 @@ psql --username=${DB_USER} --host=${DB_HOST} --db=${DB_NAME} --command="DROP OWN
 
 cat > config.ini << EOF
 [alembic]
-script_location = asterisk/ast-db-manage/config
+script_location = asterisk/contrib/ast-db-manage/config
 sqlalchemy.url = postgresql://${DB_USER}@${DB_HOST}/${DB_NAME}
 
 [loggers]
