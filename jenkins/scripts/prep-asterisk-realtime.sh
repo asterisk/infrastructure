@@ -38,7 +38,7 @@ if [ -z "$DB_NAME" ]; then
 fi
 
 # Drop any existing tables we have created from a previous run to ensure the alembic has to run all revisions
-psql --username=${DB_USER} --host=${DB_HOST} --db=${DB_NAME} --command="DROP OWNED BY ${DB_USER}"
+psql --username=${DB_USER} --host=${DB_HOST} --db=${DB_NAME} --command="DROP OWNED BY ${DB_USER} CASCADE"
 
 cat > config.ini << EOF
 [alembic]
