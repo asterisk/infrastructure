@@ -238,5 +238,4 @@
         - 'gate-{name}-external-mwi'
         - 'gate-{name}-ari'
         - 'periodic-{name}-{branch}'
-        - 'periodic-realtime-{name}-{branch}'
         - 'periodic-ref_debug-{name}-{branch}'

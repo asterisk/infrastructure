@@ -20,4 +20,7 @@
         - 'master'
     jobs:
         - asterisk-jobs
-
+        - 'periodic-realtime-{name}-{branch}':
+            branch:
+                - '13'
+                - 'master'
