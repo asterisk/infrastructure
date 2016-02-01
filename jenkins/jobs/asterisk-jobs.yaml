@@ -48,7 +48,6 @@
             project: '{name}'
         - prep-testsuite
         - prep-testsuite-realtime
-        - run-asterisk-unittests
         - prep-asterisk-realtime
         - run-testsuite:
             testsuite-params: '-t tests/channels/pjsip'
