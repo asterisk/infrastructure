@@ -63,6 +63,13 @@
             /srv/git/infrastructure/jenkins/scripts/prep-testsuite.sh git://git.asterisk.org
 
 - builder:
+    name: prep-testsuite-realtime
+    builders:
+        - shell: |
+            #!/bin/bash
+            /srv/git/infrastructure/jenkins/scripts/prep-testsuite-realtime.sh asterisk 127.0.0.1 asterisk asterisk-connector
+
+- builder:
     name: run-testsuite
     builders:
         - shell: |

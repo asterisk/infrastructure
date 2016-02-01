@@ -47,6 +47,7 @@
             branch: '{branch}'
             project: '{name}'
         - prep-testsuite
+        - prep-testsuite-realtime
         - run-asterisk-unittests
         - prep-asterisk-realtime
         - run-testsuite
