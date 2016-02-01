@@ -60,7 +60,7 @@
     builders:
         - shell: |
             #!/bin/bash
-            /srv/git/infrastructure/jenkins/scripts/prep-testsuite.sh git://git.asterisk.org
+            sudo /srv/git/infrastructure/jenkins/scripts/prep-testsuite.sh git://git.asterisk.org
 
 - builder:
     name: prep-testsuite-realtime

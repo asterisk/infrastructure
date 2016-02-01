@@ -20,6 +20,9 @@
 
 GIT_ORIGIN=$1
 
+CI_USER=jenkins
+CI_GROUP=users
+
 if [ -z "$GIT_ORIGIN" ]; then
     echo "The git origin must be the first argument."
     exit 1
@@ -54,7 +57,16 @@ git checkout master
 git reset --hard master
 git pull
 
+if [ -d ./logs ]; then
+    rm -fr logs/*
+fi
+
 popd
+
+# Drop the permissions down on the testsuite and /tmp directory
+# for other scripts
+chown -R ${CI_USER}:${CI_GROUP} testsuite
+chown -R ${CI_USER}:${CI_GROUP} /tmp/asterisk-testsuite || true
 
 echo "*** Asterisk Test Suite Ready ***"
 
