@@ -46,6 +46,8 @@
         - gerrit-git-prep:
             branch: '{branch}'
             project: '{name}'
+        - build-asterisk:
+            build-asterisk-params: '-v -e DO_CRASH'
         - prep-testsuite
         - prep-testsuite-realtime
         - prep-asterisk-realtime
