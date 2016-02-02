@@ -88,6 +88,20 @@ pipelines:
                 to: test-results@lists.digium.com
                 subject: 'Stable check of {change.project} failed'
     -
+        name: periodic-realtime
+        description: Periodic checks of the realtime capable test branches.
+        manager: IndependentPipelineManager
+        source: gerrit
+        precedence: low
+        trigger:
+            timer:
+                - time: '0 0 * * *'
+        failure:
+            smtp:
+                from: asteriskteam@digium.com
+                to: test-results@lists.digium.com
+                subject: 'Realtime test check of {change.project} failed'
+    -
         name: merge-check
         description: >
           Each time a change merges, this pipeline verifies that all open changes
@@ -142,6 +156,10 @@ project-templates:
         name: periodic-asterisk
         periodic-stable:
             - 'periodic-{name}-{branch}'
+    -
+        name: periodic-realtime-asterisk
+        periodic-realtime:
+            - 'periodic-realtime-{name}-{branch}'
 
 projects:
     -
@@ -161,3 +179,8 @@ projects:
               branch: '13'
             - name: 'periodic-asterisk'
               branch: 'master'
+            - name: 'periodic-realtime-asterisk'
+              branch: '13'
+            - name: 'periodic-realtime-asterisk'
+              branch: 'master'
+
