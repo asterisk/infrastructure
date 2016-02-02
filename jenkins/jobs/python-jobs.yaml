@@ -27,6 +27,7 @@
 - job-template:
     name: check-{name}-pep8
     concurrent: true
+    description: 'Check for {name} of pep8 compliance'
 
     builders:
         - node-git-prep

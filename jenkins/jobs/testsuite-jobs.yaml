@@ -3,6 +3,7 @@
     name: check-testsuite
     node: 'centos || debian'
     concurrent: true
+    description: 'Check for {name} using unit tests'
 
     wrappers:
         - timeout:
@@ -26,6 +27,7 @@
     name: gate-testsuite
     node: 'centos || debian'
     concurrent: true
+    description: 'Gate for {name} using unit tests'
 
     wrappers:
         - timeout:

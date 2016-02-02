@@ -33,6 +33,7 @@
     name: 'periodic-realtime-{name}-{branch}'
     node: 'centos || debian'
     concurrent: true
+    description: 'Periodic testsuite run for {name} using {branch} branch against realtime'
 
     wrappers:
         - timeout:
@@ -67,6 +68,7 @@
     name: 'periodic-ref_debug-{name}-{branch}'
     node: 'centos || debian'
     concurrent: true
+    description: 'Periodic full testsuite run for {name} using {branch} branch with REF_DEBUG enabled'
 
     wrappers:
         - timeout:
@@ -99,6 +101,7 @@
     name: 'check-{name}'
     node: 'centos || debian'
     concurrent: true
+    description: 'Basic build and unit test run for {name}'
 
     wrappers:
         - timeout:
@@ -149,6 +152,7 @@
     name: 'gate-{name}-channel-drivers'
     node: 'centos || debian'
     concurrent: true
+    description: 'Gate for {name} using only channel testsuite tests'
 
     wrappers:
         - timeout:
@@ -177,6 +181,7 @@
     name: 'gate-{name}-external-mwi'
     node: 'centos || debian'
     concurrent: true
+    description: 'Gate for {name} using external MWI tests'
 
     wrappers:
         - timeout:
@@ -205,6 +210,7 @@
     name: 'gate-{name}-ari'
     node: 'centos || debian'
     concurrent: true
+    description: 'Gate for {name} using only ARI tests'
 
     wrappers:
         - timeout:
