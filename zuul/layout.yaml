@@ -102,6 +102,20 @@ pipelines:
                 to: test-results@lists.digium.com
                 subject: 'Realtime test check of {change.project} failed'
     -
+        name: periodic-ref_debug
+        description: Weekly check of the stable branches with REF_DEBUG.
+        manager: IndependentPipelineManager
+        source: gerrit
+        precedence: low
+        trigger:
+            timer:
+                - time: '0 0 * * 6'
+        failure:
+            smtp:
+                from: asteriskteam@digium.com
+                to: test-results@lists.digium.com
+                subject: 'Weekly REF_DEBUG test check of {change.project} failed'
+    -
         name: merge-check
         description: >
           Each time a change merges, this pipeline verifies that all open changes
@@ -156,6 +170,8 @@ project-templates:
         name: periodic-asterisk
         periodic-stable:
             - 'periodic-{name}-{branch}'
+        periodic-ref_debug:
+            - 'periodic-ref_debug-{name}-{branch}'
     -
         name: periodic-realtime-asterisk
         periodic-realtime:
