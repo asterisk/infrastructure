@@ -113,7 +113,7 @@
            latest-only: False
        - archive:
            allow-empty: True
-           artifacts: 'testsuite/refleaks-summary.tar.gz'
+           artifacts: 'testsuite/refleaks.tar.gz'
            latest-only: False
 
 - publisher:
