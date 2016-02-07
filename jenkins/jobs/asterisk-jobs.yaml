@@ -84,7 +84,7 @@
             project: '{name}'
         - prep-testsuite
         - run-asterisk-unittests:
-            build-asterisk-params: '-e REF_DEBUG -d res_odbc'
+            build-asterisk-params: '-e REF_DEBUG -d res_odbc -d res_jabber'
         - run-testsuite
 
     publishers:
