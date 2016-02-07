@@ -45,7 +45,7 @@ if [ -d ./logs ]; then
 fi
 
 if [ -f ./logs/refleaks-summary.txt ]; then
-	find logs/ \( -name 'refs.txt' -o -name 'refleaks-summary.txt' \) -printf0 | tar -czvf refleaks.tar.gz --null -T -
+	find logs/ \( -name 'refs.txt' -o -name 'refleaks-summary.txt' \) -print0 | tar -czvf refleaks.tar.gz --null -T -
 fi
 
 popd
