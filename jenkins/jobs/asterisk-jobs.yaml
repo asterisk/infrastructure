@@ -65,6 +65,30 @@
         artifactDaysToKeep: 31
 
 - job-template:
+    name: 'periodic-documentation-{name}-{branch}'
+    node: 'centos || debian'
+    concurrent: true
+    description: 'Periodic wiki documentation update for {name} using {branch} branch'
+
+    wrappers:
+        - timeout:
+            timeout: 300
+            timeout-var: 'BUILD_TIMEOUT'
+            fail: true
+        - timestamps
+
+    builders:
+        - node-git-prep
+        - gerrit-git-prep-documentation:
+            branch: '{branch}'
+            project: '{name}'
+        - prep-documentation
+
+    logrotate:
+        daysToKeep: 31
+        artifactDaysToKeep: 31
+
+- job-template:
     name: 'periodic-ref_debug-{name}-{branch}'
     node: 'centos || debian'
     concurrent: true

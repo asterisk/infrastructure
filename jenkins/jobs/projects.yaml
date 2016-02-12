@@ -24,3 +24,7 @@
             branch:
                 - '13'
                 - 'master'
+        - 'periodic-documentation-{name}-{branch}':
+            branch:
+                - '11'
+                - '13'
