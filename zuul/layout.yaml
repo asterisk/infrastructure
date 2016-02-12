@@ -102,6 +102,20 @@ pipelines:
                 to: test-results@lists.digium.com
                 subject: 'Realtime test check of {change.project} failed'
     -
+        name: periodic-documentation
+        description: Nightly wiki documentation update of release branches.
+        manager: IndependentPipelineManager
+        source: gerrit
+        precedence: low
+        trigger:
+            timer:
+                - time: '0 0 * * *'
+        failure:
+            smtp:
+                from: asteriskteam@digium.com
+                to: test-results@lists.digium.com
+                subject: 'Wiki documentation update of {change.project} failed'
+    -
         name: periodic-ref_debug
         description: Weekly check of the stable branches with REF_DEBUG.
         manager: IndependentPipelineManager
@@ -176,6 +190,10 @@ project-templates:
         name: periodic-realtime-asterisk
         periodic-realtime:
             - 'periodic-realtime-{name}-{branch}'
+    -
+        name: periodic-documentation-asterisk
+        periodic-documentation:
+            - 'periodic-documentation-{name}-{branch}'
 
 projects:
     -
@@ -199,4 +217,8 @@ projects:
               branch: '13'
             - name: 'periodic-realtime-asterisk'
               branch: 'master'
+            - name: 'periodic-documentation-asterisk'
+              branch: '11'
+            - name: 'periodic-documentation-asterisk'
+              branch: '13'
 
