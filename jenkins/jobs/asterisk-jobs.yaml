@@ -79,10 +79,10 @@
 
     builders:
         - node-git-prep
+        - prep-documentation
         - gerrit-git-prep-documentation:
             branch: '{branch}'
             project: '{name}'
-        - prep-documentation
 
     logrotate:
         daysToKeep: 31
