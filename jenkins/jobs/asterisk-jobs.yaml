@@ -79,7 +79,7 @@
 
     builders:
         - node-git-prep
-        - prep-documentation
+        - prep-documentation:
             branch: '{branch}'
 
     logrotate:
