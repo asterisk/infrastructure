@@ -79,7 +79,9 @@
 
     builders:
         - node-git-prep
-        - prep-documentation:
+        - prep-wiki-documentation:
+            branch: '{branch}'
+        - update-wiki-documentation:
             branch: '{branch}'
 
     logrotate:
