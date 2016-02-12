@@ -18,23 +18,25 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-GIT_ORIGIN=$1
+GIT_ASTXML2WIKI_ORIGIN=$1
+GIT_ASTERISK_ORIGIN=$2
+BRANCH=$3
 
 CI_USER=jenkins
 CI_GROUP=users
 
-if [ -z "$GIT_ORIGIN" ]; then
-    echo "The git origin must be the first argument."
-    exit 1
-fi
+echo "Running with the following parameters:"
+echo "  GIT_ASTXML2WIKI_ORIGIN => $GIT_ASTXML2WIKI_ORIGIN"
+echo "  GIT_ASTERISK_ORIGIN => $GIT_ASTERISK_ORIGIN"
+echo "  BRANCH => $BRANCH"
 
 if [ ! -d ./astxml2wiki ]; then
-    git clone $GIT_ORIGIN astxml2wiki
+    git clone $GIT_ASTXML2WIKI_ORIGIN astxml2wiki
 fi
 
 pushd astxml2wiki
 
-git remote set-url origin $GIT_ORIGIN
+git remote set-url origin $GIT_ASTXML2WIKI_ORIGIN
 
 if ! git remote update; then
     echo "The remote update failed, so garbage collecting before trying again."
@@ -53,8 +55,33 @@ git checkout master
 git reset --hard master
 git pull
 
-# This purposely keeps us in the astxml2wiki directory for the Asterisk step
+if [ ! -d ./asterisk ]; then
+    git clone $GIT_ASTERISK_ORIGIN asterisk
+fi
+
+pushd asterisk
+
+git remote set-url origin $GIT_ASTERISK_ORIGIN
+
+if ! git remote update; then
+    echo "The remote update failed, so garbage collecting before trying again."
+    git gc
+    git remote update
+fi
+
+git reset --hard
+if ! git clean -x -f -d -q ; then
+    sleep 1
+    git clean -x -f -d -q
+fi
+
+git fetch origin $BRANCH
+git checkout $BRANCH
+git reset --hard $BRANCH
+git pull
+
 popd
 
-echo "*** astxml2wiki Ready ***"
+popd
 
+echo "*** Documentation clones ready ***"

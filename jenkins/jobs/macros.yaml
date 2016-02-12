@@ -60,19 +60,7 @@
     builders:
         - shell: |
             #!/bin/bash
-            sudo /srv/git/infrastructure/jenkins/scripts/prep-documentation.sh https://github.com/asterisk/publish-docs.git
-
-- builder:
-    name: gerrit-git-prep-documentation
-    builders:
-        - shell: |
-            #!/bin/bash
-            export BRANCH={branch}
-            if [ -z "$ZUUL_PROJECT" ]; then
-                export ZUUL_PROJECT={project}
-            fi
-            cd astxml2wiki
-            sudo /srv/git/infrastructure/jenkins/scripts/gerrit-git-prep.sh https://gerrit.asterisk.org git://git.asterisk.org asterisk
+            sudo /srv/git/infrastructure/jenkins/scripts/prep-documentation.sh https://github.com/asterisk/publish-docs.git git://git.asterisk.org/asterisk/asterisk.git {branch}
 
 - builder:
     name: prep-testsuite
