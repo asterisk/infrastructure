@@ -32,6 +32,22 @@ if [ -d /tmp/asterisk-testsuite ]; then
     rm -fr /tmp/asterisk-testsuite/
 fi
 
+CLEAN_DIR=0
+if [ -d ./testsuite ]; then
+    pushd testsuite
+    if output=$(git status --untracked-files=no --porcelain) && [ -z "$output" ]; then
+        echo "testsuite clean and usable"
+    else
+        CLEAN_DIR=1
+    fi
+    popd
+fi
+
+if [ -d ./testsuite ] && [ $CLEAN_DIR -eq 1 ]; then
+    echo "Cleaning testsuite"
+    rm -fr testsuite
+fi
+
 if [ ! -d ./testsuite ]; then
     git clone $GIT_ORIGIN/asterisk/testsuite.git testsuite
 fi

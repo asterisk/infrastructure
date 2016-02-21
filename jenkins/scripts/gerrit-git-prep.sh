@@ -77,6 +77,16 @@ if [ ! -z "$ZUUL_CHANGE" ]; then
     echo "Triggered by: $GERRIT_SITE/$ZUUL_CHANGE"
 fi
 
+if [ -d $ZUUL_PROJECT ]; then
+    pushd $ZUUL_PROJECT
+    if output=$(git status --untracked-files=no --porcelain) && [ -z "$output" ]; then
+        echo "$ZUUL_PROJECT clean and usable"
+    else
+        CLEAN_DIR=1
+    fi
+    popd
+fi
+
 if [ -d $ZUUL_PROJECT ] && [ $CLEAN_DIR -eq 1 ]; then
     echo "Cleaning $ZUUL_PROJECT"
     rm -fr $ZUUL_PROJECT

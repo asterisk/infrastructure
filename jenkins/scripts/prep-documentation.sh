@@ -30,6 +30,23 @@ echo "  GIT_ASTXML2WIKI_ORIGIN => $GIT_ASTXML2WIKI_ORIGIN"
 echo "  GIT_ASTERISK_ORIGIN => $GIT_ASTERISK_ORIGIN"
 echo "  BRANCH => $BRANCH"
 
+CLEAN_DIR=0
+
+if [ -d ./astxml2wiki ]; then
+    pushd astxml2wiki
+    if output=$(git status --untracked-files=no --porcelain) && [ -z "$output" ]; then
+        echo "astxml2wiki clean and usable"
+    else
+        CLEAN_DIR=1
+    fi
+    popd
+fi
+
+if [ -d ./astxml2wiki ] && [ $CLEAN_DIR -eq 1 ]; then
+    echo "Cleaning astxml2wiki"
+    rm -fr astxml2wiki
+fi
+
 if [ ! -d ./astxml2wiki ]; then
     git clone $GIT_ASTXML2WIKI_ORIGIN astxml2wiki
 fi
@@ -54,6 +71,23 @@ git fetch origin master
 git checkout master
 git reset --hard master
 git pull
+
+CLEAN_DIR=0
+
+if [ -d ./asterisk ]; then
+    pushd asterisk
+    if output=$(git status --untracked-files=no --porcelain) && [ -z "$output" ]; then
+        echo "asterisk clean and usable"
+    else
+        CLEAN_DIR=1
+    fi
+    popd
+fi
+
+if [ -d ./asterisk ] && [ $CLEAN_DIR -eq 1 ]; then
+    echo "Cleaning asterisk"
+    rm -fr asterisk
+fi
 
 if [ ! -d ./asterisk ]; then
     git clone $GIT_ASTERISK_ORIGIN asterisk
