@@ -174,7 +174,6 @@ project-templates:
     -
         name: asterisk-jobs
         check:
-            - 'check-asterisk'
             - 'check-asterisk-32'
             - 'check-asterisk-64'
         gate:
