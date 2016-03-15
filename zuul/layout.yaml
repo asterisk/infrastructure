@@ -171,8 +171,6 @@ project-templates:
         name: periodic-asterisk
         periodic-stable:
             - 'periodic-{name}-{branch}'
-        periodic-ref_debug:
-            - 'periodic-ref_debug-{name}-{branch}'
     -
         name: periodic-realtime-asterisk
         periodic-realtime:
