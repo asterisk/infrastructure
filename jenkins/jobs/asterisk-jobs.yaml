@@ -120,33 +120,6 @@
         daysToKeep: 31
         artifactDaysToKeep: 31
 
-
-- job-template:
-    name: 'check-{name}'
-    node: 'centos || debian'
-    concurrent: true
-    description: 'Basic build and unit test run for {name}'
-
-    wrappers:
-        - timeout:
-            timeout: 60
-            timeout-var: 'BUILD_TIMEOUT'
-            fail: true
-        - timestamps
-
-    builders:
-        - node-git-prep
-        - gerrit-git-prep
-        - run-asterisk-unittests
-
-    publishers:
-        - publish-asterisk-unittests:
-            project-name: '{name}'
-
-    logrotate:
-        daysToKeep: 7
-        artifactDaysToKeep: 7
-
 - job-template:
     name: 'check-{name}-32'
     node: '(centos || debian) && 32-bit'
@@ -314,7 +287,6 @@
 - job-group:
     name: asterisk-jobs
     jobs:
-        - 'check-{name}'
         - 'check-{name}-32'
         - 'check-{name}-64'
         - 'gate-{name}'
