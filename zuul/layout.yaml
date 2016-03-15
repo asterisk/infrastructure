@@ -116,20 +116,6 @@ pipelines:
                 to: test-results@lists.digium.com
                 subject: 'Wiki documentation update of {change.project} failed'
     -
-        name: periodic-ref_debug
-        description: Weekly check of the stable branches with REF_DEBUG.
-        manager: IndependentPipelineManager
-        source: gerrit
-        precedence: low
-        trigger:
-            timer:
-                - time: '0 0 * * 6'
-        failure:
-            smtp:
-                from: asteriskteam@digium.com
-                to: test-results@lists.digium.com
-                subject: 'Weekly REF_DEBUG test check of {change.project} failed'
-    -
         name: merge-check
         description: >
           Each time a change merges, this pipeline verifies that all open changes
