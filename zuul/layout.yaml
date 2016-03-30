@@ -22,7 +22,7 @@ pipelines:
                 verified: 1
         failure:
             gerrit:
-                verified: 0
+                verified: -1
     -
         name: gate
         description: Changes that have been approved by mergers are enqueued in this pipeline.
@@ -35,8 +35,7 @@ pipelines:
             open: True
             current-patchset: True
             approval:
-                -
-                    verified: [1, 2]
+              - code-review: 2
         trigger:
             gerrit:
                 - event: comment-added
@@ -50,7 +49,7 @@ pipelines:
                 submit: true
         failure:
             gerrit:
-                verified: 0
+                verified: -1
         window-floor: 20
         window-increase-factor: 2
     -
