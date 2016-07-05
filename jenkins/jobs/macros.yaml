@@ -56,6 +56,15 @@
             /srv/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
 
 - builder:
+    name: run-asterisk-codec-abi
+    builders:
+        - build-asterisk:
+            build-asterisk-params: '-v -e DO_CRASH {build-asterisk-params}'
+        - shell: |
+            #!/bin/bash
+            /srv/git/infrastructure/jenkins/scripts/run-asterisk-codec-abi.sh {branch}
+
+- builder:
     name: prep-wiki-documentation
     builders:
         - shell: |
