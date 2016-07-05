@@ -18,6 +18,7 @@
             project: '{name}'
         - prep-testsuite
         - run-asterisk-unittests
+        - run-asterisk-codec-abi
         - run-testsuite
 
     publishers:
