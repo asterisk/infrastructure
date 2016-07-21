@@ -17,14 +17,17 @@
     branch:
         - '11'
         - '13'
+        - '14'
         - 'master'
     jobs:
         - asterisk-jobs
         - 'periodic-realtime-{name}-{branch}':
             branch:
                 - '13'
+                - '14'
                 - 'master'
         - 'periodic-documentation-{name}-{branch}':
             branch:
                 - '11'
                 - '13'
+                - '14'
