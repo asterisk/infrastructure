@@ -137,9 +137,9 @@ pipelines:
 
 jobs:
     - name: 'gate-asterisk-ari'
-      branch: '(12|13|master)'
+      branch: '(12|13|14|master)'
     - name: 'gate-asterisk-external-mwi'
-      branch: '(12|13|master)'
+      branch: '(12|13|14|master)'
 
 project-templates:
     -
