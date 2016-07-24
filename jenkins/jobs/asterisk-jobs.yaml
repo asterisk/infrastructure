@@ -16,8 +16,6 @@
         - gerrit-git-prep:
             branch: '{branch}'
             project: '{name}'
-        - build-asterisk:
-            build-asterisk-params: '-v -e DO_CRASH -e app_statsd'
         - prep-testsuite
         - run-asterisk-unittests
         - run-asterisk-codec-abi
