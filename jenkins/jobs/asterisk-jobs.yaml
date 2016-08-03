@@ -54,7 +54,7 @@
         - prep-testsuite-realtime
         - prep-asterisk-realtime
         - run-testsuite:
-            testsuite-params: '-t tests/channels/pjsip'
+            testsuite-params: '-t tests/channels/pjsip -G realtime-incompatible'
 
     publishers:
         - publish-asterisk-unittests:
