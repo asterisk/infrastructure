@@ -18,7 +18,7 @@
             project: '{name}'
         - prep-testsuite
         - run-asterisk-unittests
-        - run-asterisk-codec-abi
+        - run-asterisk-codec-abi:
             branch: '{branch}'
         - run-testsuite
 
