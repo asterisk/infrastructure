@@ -134,6 +134,10 @@
            latest-only: False
        - archive:
            allow-empty: True
+           artifacts: 'testsuite/coverage.tar.gz'
+           latest-only: False
+       - archive:
+           allow-empty: True
            artifacts: 'testsuite/refleaks.tar.gz'
            latest-only: False
 

@@ -35,9 +35,20 @@ fi
 
 ASTERISK_VER=$(asterisk -V)
 
+if [ -n "$ZUUL_PROJECT" ]; then
+	PROJECTSRC=`pwd`/$ZUUL_PROJECT
+else
+	PROJECTSRC=`pwd`/asterisk
+fi
+
 echo "*** Running tests against $ASTERISK_VER ***"
 pushd testsuite
 ./runtests.py $TESTSUITE_ARGS
+
+if [ -e ${PROJECTSRC}/main/asterisk.gcno ]; then
+	lcov --directory ${PROJECTSRC} --capture --output-file coverage.info
+	genhtml -o coverage coverage.info
+fi
 
 # Archive the logs
 if [ -d ./logs ]; then
@@ -46,6 +57,10 @@ fi
 
 if [ -f ./logs/refleaks-summary.txt ]; then
 	find logs/ \( -name 'refs.txt' -o -name 'refleaks-summary.txt' \) -print0 | tar -czvf refleaks.tar.gz --null -T -
+fi
+
+if [ -f coverage.info ]; then
+	tar -zcvf coverage.tar.gz coverage.info coverage
 fi
 
 popd
