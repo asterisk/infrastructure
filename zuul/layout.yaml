@@ -49,7 +49,7 @@ pipelines:
                 submit: true
         failure:
             gerrit:
-                verified: 0
+                verified: -1
         window-floor: 20
         window-increase-factor: 2
     -
