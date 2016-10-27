@@ -173,6 +173,11 @@ menuselect/menuselect --disable chan_vpb menuselect.makeopts
 
 ${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS} -j${BUILDJOBS}
 
+if [ $? -ne 0 ]; then
+	echo "*** Failed to build Asterisk ***"
+	exit 1
+fi
+
 if [ -f doc/core-en_US.xml ] ; then
 	echo "*** Validating XML documentation ***"
 	${MAKE} ${BUILDFLAGS} validate-docs
