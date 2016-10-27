@@ -174,6 +174,10 @@ menuselect/menuselect --disable chan_vpb menuselect.makeopts
 ${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS} -j${BUILDJOBS}
 
 if [ $? -ne 0 ]; then
+	# This additional run without -j causes the
+	# error to appear at the very end of the log.
+	${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS}
+
 	echo "*** Failed to build Asterisk ***"
 	exit 1
 fi
