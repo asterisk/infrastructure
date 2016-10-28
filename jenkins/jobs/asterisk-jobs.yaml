@@ -110,7 +110,7 @@
             project: '{name}'
         - prep-testsuite
         - run-asterisk-unittests:
-            build-asterisk-params: '-e REF_DEBUG -d res_odbc -d res_jabber'
+            build-asterisk-params: '-e REF_DEBUG -d res_odbc -d res_jabber -d res_pjsip'
         - run-testsuite
 
     publishers:
