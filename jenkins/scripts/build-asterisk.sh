@@ -121,7 +121,7 @@ ${MAKE} ${BUILDFLAGS} distclean
 
 # Run configure.  Note that if needed, this portion can
 # be expanded to provide more configure flags in the future
-COMMON_CONFIGURE_ARGS="--sysconfdir=/etc"
+COMMON_CONFIGURE_ARGS="--sysconfdir=/etc --with-pjproject-bundled"
 if $DEBUG ; then
 	COMMON_CONFIGURE_ARGS="$COMMON_CONFIGURE_ARGS --enable-dev-mode --enable-coverage"
 fi
