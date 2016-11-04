@@ -58,8 +58,6 @@
             testsuite-params: '-t tests/channels/pjsip -G realtime-incompatible'
 
     publishers:
-        - publish-asterisk-unittests:
-            project-name: '{name}'
         - publish-asterisk-testsuite
 
     logrotate:
