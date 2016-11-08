@@ -37,6 +37,15 @@ if [ -z "$DB_NAME" ]; then
     exit 1
 fi
 
+# Just in case the user and db don't already exist, let's create them.
+# Don't check for failure. Failure likely means the role and DB already
+# exist.
+#
+# XXX These lines are ignoring the DB_HOST parameter. However, in my
+# local tests, specifying the host ran afoul of pg_hba.conf.
+su -c "createuser --createdb" postgres
+su -c "createdb $DB_NAME --owner=$DB_USER" postgres
+
 # Drop any existing tables we have created from a previous run to ensure the alembic has to run all revisions
 psql --username=${DB_USER} --host=${DB_HOST} --db=${DB_NAME} --command="DROP OWNED BY ${DB_USER} CASCADE"
 
