@@ -38,6 +38,7 @@
     builders:
         - shell: |
             #!/bin/bash
+            export BRANCH={branch}
             sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh {build-asterisk-params}
 
 - builder:
@@ -50,18 +51,27 @@
 - builder:
     name: run-asterisk-unittests
     builders:
-        - build-asterisk:
-            build-asterisk-params: '-v -e app_statsd -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH {build-asterisk-params}'
+        - conditional-step:
+            on-evaluation-failure: run
+            condition-kind: regex-match
+            regex:  '^master$'
+            label: '{branch}'
+            steps:
+                - build-asterisk:
+                    build-asterisk-params: '-v -e app_statsd -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH {build-asterisk-params}'
+                    branch: '{branch}'
+        - conditional-step:
+            on-evaluation-failure: run
+            condition-kind: regex-match
+            regex:  '^(13|14)$'
+            label: '{branch}'
+            steps:
+                - build-asterisk:
+                    build-asterisk-params: '-v -e codec_silk -e app_statsd -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH {build-asterisk-params}'
+                    branch: '{branch}'
         - shell: |
             #!/bin/bash
             /srv/git/infrastructure/jenkins/scripts/run-asterisk-unittests.sh
-
-- builder:
-    name: run-asterisk-codec-abi
-    builders:
-        - shell: |
-            #!/bin/bash
-            /srv/git/infrastructure/jenkins/scripts/run-asterisk-codec-abi.sh {branch}
 
 - builder:
     name: prep-wiki-documentation
