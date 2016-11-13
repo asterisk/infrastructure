@@ -17,8 +17,8 @@
             branch: '{branch}'
             project: '{name}'
         - prep-testsuite
-        - run-asterisk-unittests
-        - run-asterisk-codec-abi:
+        - run-asterisk-unittests:
+            build-asterisk-params:
             branch: '{branch}'
         - run-testsuite
 
@@ -51,6 +51,7 @@
             project: '{name}'
         - build-asterisk:
             build-asterisk-params: '-v -e DO_CRASH'
+            branch: '{branch}'
         - prep-testsuite
         - prep-testsuite-realtime
         - prep-asterisk-realtime
@@ -109,6 +110,7 @@
         - prep-testsuite
         - run-asterisk-unittests:
             build-asterisk-params: '-e REF_DEBUG -d res_odbc -d res_jabber -d res_pjsip'
+            branch: '{branch}'
         - run-testsuite
 
     publishers:
@@ -136,7 +138,9 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - run-asterisk-unittests
+        - run-asterisk-unittests:
+            build-asterisk-params:
+            branch: '{branch}'
 
     publishers:
         - publish-asterisk-unittests:
@@ -162,7 +166,9 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - run-asterisk-unittests
+        - run-asterisk-unittests:
+            build-asterisk-params:
+            branch: '{branch}'
 
     publishers:
         - publish-asterisk-unittests:
@@ -187,7 +193,9 @@
     builders:
         - node-git-prep
         - gerrit-git-prep
-        - run-asterisk-unittests
+        - run-asterisk-unittests:
+            build-asterisk-params:
+            branch: '{branch}'
 
     publishers:
         - publish-asterisk-unittests:
@@ -215,6 +223,7 @@
         - gerrit-git-prep
         - build-asterisk:
             build-asterisk-params: '-v -e DO_CRASH'
+            branch: '{branch}'
         - prep-testsuite
         - run-testsuite:
             testsuite-params: '-t tests/channels'
@@ -244,6 +253,7 @@
         - gerrit-git-prep
         - build-asterisk:
             build-asterisk-params: '-v -d app_voicemail -e res_mwi_external -e res_mwi_external_ami -e res_stasis_mailbox -e DO_CRASH'
+            branch: '{branch}'
         - prep-testsuite
         - run-testsuite:
             testsuite-params: '-g mwi_external'
@@ -273,6 +283,7 @@
         - gerrit-git-prep
         - build-asterisk:
             build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
+            branch: '{branch}'
         - prep-testsuite
         - run-testsuite:
             testsuite-params: '-g ARI'
