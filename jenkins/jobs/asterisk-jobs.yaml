@@ -286,7 +286,7 @@
             branch: '{branch}'
         - prep-testsuite
         - run-testsuite:
-            testsuite-params: '-g ARI'
+            testsuite-params: '-t tests/rest_api'
 
     publishers:
         - publish-asterisk-testsuite
