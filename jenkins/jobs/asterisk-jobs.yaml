@@ -256,7 +256,7 @@
             branch: '{branch}'
         - prep-testsuite
         - run-testsuite:
-            testsuite-params: '-g mwi_external'
+            testsuite-params: '-g mwi_external -t tests/channels/pjsip/publish -t tests/channels/pjsip/subscriptions -t tests/realtime'
 
     publishers:
         - publish-asterisk-testsuite
