@@ -1,7 +1,7 @@
 
 - job:
     name: check-testsuite
-    node: 'centos || debian'
+    node: 'check'
     concurrent: true
     description: 'Check for {name} using unit tests'
 
@@ -25,7 +25,7 @@
 
 - job:
     name: gate-testsuite
-    node: 'centos || debian'
+    node: 'gate'
     concurrent: true
     description: 'Gate for {name} using unit tests'
 
