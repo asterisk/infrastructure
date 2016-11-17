@@ -18,7 +18,7 @@
         - gerrit-git-prep
         - python-coverage
 
-    node: '{node}'
+    node: 'check'
 
     logrotate:
         daysToKeep: 7
@@ -40,7 +40,7 @@
         - publish-pep8-results:
             pep8_output: '{name}-pep8.txt'
 
-    node: '{node}'
+    node: 'check'
 
     logrotate:
         daysToKeep: 7
