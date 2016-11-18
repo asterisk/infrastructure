@@ -12,13 +12,13 @@
 
 - project:
     name: 'asterisk'
+    branch:
+        - '11'
+        - '13'
+        - '14'
+        - 'master'
     jobs:
         - asterisk-jobs:
-           branch:
-               - '11'
-               - '13'
-               - '14'
-               - 'master'
         - 'periodic-realtime-{name}-{branch}':
             branch:
                 - '13'
