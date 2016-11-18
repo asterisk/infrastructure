@@ -38,7 +38,6 @@
     builders:
         - shell: |
             #!/bin/bash
-            export BRANCH={branch}
             sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh {build-asterisk-params}
 
 - builder:
@@ -54,7 +53,7 @@
         - conditional-step:
             on-evaluation-failure: run
             condition-kind: regex-match
-            regex:  '^master$'
+            regex:  '^(11|master)$'
             label: '{branch}'
             steps:
                 - build-asterisk:
