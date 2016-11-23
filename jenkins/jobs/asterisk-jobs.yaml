@@ -66,7 +66,7 @@
 
 - job-template:
     name: 'periodic-documentation-{name}-{branch}'
-    node: 'centos || debian'
+    node: '(centos || debian) && documentation'
     concurrent: true
     description: 'Periodic wiki documentation update for {name} using {branch} branch'
 
