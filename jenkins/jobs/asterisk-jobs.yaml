@@ -246,7 +246,7 @@
             build-asterisk-params: '-v -d app_voicemail -e res_mwi_external -e res_mwi_external_ami -e res_stasis_mailbox -e DO_CRASH'
         - prep-testsuite
         - run-testsuite:
-            testsuite-params: '-g mwi_external'
+            testsuite-params: '-g mwi_external -t tests/channels/pjsip/publish -t tests/channels/pjsip/subscriptions -t tests/realtime'
 
     publishers:
         - publish-asterisk-testsuite
@@ -275,7 +275,7 @@
             build-asterisk-params: '-v -e app_voicemail -e app_directory -e test_voicemail_api -e FILE_STORAGE -e DO_CRASH'
         - prep-testsuite
         - run-testsuite:
-            testsuite-params: '-g ARI'
+            testsuite-params: '-t tests/rest_api'
 
     publishers:
         - publish-asterisk-testsuite
