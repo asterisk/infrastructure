@@ -35,8 +35,9 @@ CI_USER=jenkins
 CI_GROUP=users
 
 PWD=`pwd`
-BUILDFLAGS="NOISY_BUILD=yes"
 BUILDJOBS=$[`nproc` + 1]
+
+echo "*** $(date): Building Asterisk with $@ using ${BUILDJOBS} jobs"
 
 if [ -n "$ZUUL_PROJECT" ]; then
 	PROJECT=$ZUUL_PROJECT
@@ -78,7 +79,7 @@ if [ "`uname`" = "FreeBSD" ] && [ "`uname -m`" = "i386" ] ; then
 fi
 
 export PATH="/usr/lib/ccache:$PATH:/usr/local/bin:/usr/sbin:/usr/local/sbin"
-echo "PATH has been set to: ${PATH}"
+echo "*** $(date) PATH has been set to: ${PATH}"
 
 # This probably should be set up in the machine configuration
 ulimit -n 32767
@@ -89,50 +90,64 @@ pushd ${PROJECT}
 # If the configuration sample exists then all alembic samples should exist
 if [ -f contrib/ast-db-manage/config.ini.sample ]; then
 	if [ -f /usr/bin/alembic ]; then
+		echo "*** $(date): Testing alembic branches"
+
 		pushd contrib/ast-db-manage
 		# Ensure no old .pyc files remain around to skew results
 		rm -rf config/*.pyc cdr/*.pyc voicemail/*.pyc
 		BRANCHES=$(alembic -c config.ini.sample branches)
 		if [ -n "$BRANCHES" ]; then
-			echo "Alembic branches exist for configuration - details follow"
-			echo $BRANCHES
+			>&2 echo "Alembic branches exist for configuration - details follow ***"
+			>&2 echo $BRANCHES
 			exit 1
 		fi
 		BRANCHES=$(alembic -c cdr.ini.sample branches)
 		if [ -n "$BRANCHES" ]; then
-			echo "Alembic branches exist for CDR - details follow"
-			echo $BRANCHES
+			>&2 echo "Alembic branches exist for CDR - details follow ***"
+			>&2 echo $BRANCHES
 			exit 1
 		fi
 		BRANCHES=$(alembic -c voicemail.ini.sample branches)
 		if [ -n "$BRANCHES" ]; then
-			echo "Alembic branches exist for voicemail - details follow"
-			echo $BRANCHES
+			>&2 echo "Alembic branches exist for voicemail - details follow ***"
+			>&2 echo $BRANCHES
 			exit 1
 		fi
 		popd
 	else
-		echo "Alembic is unavailable - unable to perform branch checking"
+		>&2 echo "*** $(date) Alembic is unavailable - unable to perform branch checking"
 	fi
 fi
 
-# Test distclean
-${MAKE} ${BUILDFLAGS} distclean
+echo "*** $(date) ${MAKE} distclean"
+${MAKE} distclean
+
+mkdir -p /srv/cache/externals || :
+mkdir -p /srv/cache/sounds || :
+
 
 # Run configure.  Note that if needed, this portion can
 # be expanded to provide more configure flags in the future
-COMMON_CONFIGURE_ARGS="--sysconfdir=/etc --with-pjproject-bundled"
+COMMON_CONFIGURE_ARGS="--sysconfdir=/etc --with-pjproject-bundled \
+	--with-sounds-cache=/srv/cache/sounds \
+	--with-externals-cache=/srv/cache/externals \
+"
 if $DEBUG ; then
 	COMMON_CONFIGURE_ARGS="$COMMON_CONFIGURE_ARGS --enable-dev-mode --enable-coverage"
 fi
+echo "*** $(date) ./configure ${COMMON_CONFIGURE_ARGS}"
 ./configure ${COMMON_CONFIGURE_ARGS}
 
 # Test both 'uninstall' and 'uninstall-all', since they have different logic paths
-# in the Asterisk Makefile.
-${MAKE} ${BUILDFLAGS} uninstall
-${MAKE} ${BUILDFLAGS} uninstall-all
-${MAKE} ${BUILDFLAGS} menuselect.makeopts
+echo "*** $(date) ${MAKE} uninstall"
+${MAKE} uninstall
+echo "*** $(date) ${MAKE} uninstall-all"
+${MAKE} uninstall-all
 
+echo "*** $(date) ${MAKE} menuselect.makeopts"
+${MAKE} menuselect.makeopts
+
+echo "*** $(date) Setting individual menuselect options"
 if $DEBUG ; then
 	menuselect/menuselect --enable DONT_OPTIMIZE menuselect.makeopts
 	menuselect/menuselect --enable MALLOC_DEBUG menuselect.makeopts
@@ -161,6 +176,11 @@ if grep -q MENUSELECT_UTILS menuselect.makeopts ; then
 	menuselect/menuselect --enable-category MENUSELECT_UTILS menuselect.makeopts
 fi
 
+# Disable all the downloadable modules.  If needed, they'll be enabled later.
+for d in codec_opus codec_silk codec_siren7 codec_siren14 codec_g729a res_digium_phone ; do
+	menuselect/menuselect --disable $d menuselect.makeopts
+done
+
 for ((i=0; i<${#ARR_ENABLES[@]}; ++i)); do
 	menuselect/menuselect --enable "${ARR_ENABLES[$i]}" menuselect.makeopts
 done
@@ -171,30 +191,54 @@ done
 # Disable chan_vpb, because it is "not so good"
 menuselect/menuselect --disable chan_vpb menuselect.makeopts
 
-${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS} -j${BUILDJOBS}
-
+echo "*** $(date) ${MAKE} ASTCFLAGS=${ASTCFLAGS} -j${BUILDJOBS}"
+${MAKE} ASTCFLAGS=${ASTCFLAGS} -j${BUILDJOBS}
 if [ $? -ne 0 ]; then
-	# This additional run without -j causes the
-	# error to appear at the very end of the log.
-	${MAKE} ${BUILDFLAGS} ASTCFLAGS=${ASTCFLAGS}
-
-	echo "*** Failed to build Asterisk ***"
-	exit 1
+	# This additional run without -j may work but if it still fails the
+	# error will appear at the very end of the log.
+	>&2 echo "*** $(date) Failed.  Remaking: ${MAKE} ASTCFLAGS=${ASTCFLAGS}"
+	${MAKE} NOISY_BUILD=yes ASTCFLAGS=${ASTCFLAGS}
+	if [ $? -ne 0 ]; then
+		>&2 echo "*** $(date) Failed to build Asterisk ***"
+		exit 1
+	fi
 fi
 
 if [ -f doc/core-en_US.xml ] ; then
-	echo "*** Validating XML documentation ***"
-	${MAKE} ${BUILDFLAGS} validate-docs
+	echo "*** $(date) ${MAKE} validate-docs"
+	${MAKE} validate-docs
+	if [ $? -ne 0 ]; then
+		>&2 echo "*** $(date) Failed.  Remaking: $(date) ${MAKE} validate-docs"
+		${MAKE} NOISY_BUILD=yes validate-docs
+		if [ $? -ne 0 ]; then
+			>&2 echo "*** $(date) Failed to validate documentation ***"
+			exit 1
+		fi
+	fi
 fi
 
-echo "*** Installing Asterisk and Sample Configuration ***"
-WGET_EXTRA_ARGS=--quiet ${MAKE} ${BUILDFLAGS} install
-${MAKE} ${BUILDFLAGS} samples
+echo "*** $(date) WGET_EXTRA_ARGS=--quiet ${MAKE} install"
+WGET_EXTRA_ARGS=--quiet ${MAKE} install
+if [ $? -ne 0 ]; then
+	>&2 echo "*** $(date) Failed.  Remaking: WGET_EXTRA_ARGS=--quiet ${MAKE} install"
+	WGET_EXTRA_ARGS=--quiet ${MAKE} NOISY_BUILD=yes install
+	if [ $? -ne 0 ]; then
+		>&2 echo "*** Failed to install Asterisk ***"
+		exit 1
+	fi
+fi
+
+echo "*** $(date) ${MAKE} samples"
+${MAKE} samples
+if [ $? -ne 0 ]; then
+	>&2 echo "*** Failed to install Asterisk samples ***"
+	exit 1
+fi
 
 popd
 
 if [ ! -f /usr/sbin/asterisk ]; then
-	echo "*** Failed to install Asterisk ***"
+	>&2 echo "*** Failed to install Asterisk ***"
 	exit 1
 fi
 
