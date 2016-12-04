@@ -1,0 +1,43 @@
+###############################################################################
+# Testsuite Project
+###############################################################################
+
+- project:
+    name: 'testsuite'
+    jobs:
+        - 'check-testsuite-pep8'
+        - 'check-testsuite'
+
+###############################################################################
+# Jobs
+###############################################################################
+- job:
+    name: 'check-testsuite-pep8'
+    concurrent: true
+    description: 'Check Testsuite pep8'
+    project-type: workflow
+    sandbox: false
+    
+    dsl: |
+        checkTestsuitePEP8()
+        
+- job:
+    name: 'check-testsuite'
+    concurrent: true
+    description: 'Check Testsuite'
+    project-type: workflow
+    sandbox: false
+    
+    dsl: |
+        checkTestsuite()
+
+- job:
+    name: 'groovy-test'
+    concurrent: true
+    description: 'Check Testsuite'
+    project-type: workflow
+    sandbox: false
+    
+    dsl: |
+        groovyTest("abc", "def")
+        

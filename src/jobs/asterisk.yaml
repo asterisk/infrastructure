@@ -1,0 +1,225 @@
+
+#
+# Asterisk Project
+#
+- defaults:
+    name: global
+    basic_build_options: "-v -e DO_CRASH"
+    default_build_options: "{basic_build_options} -e app_voicemail -e app_directory -e FILE_STORAGE"
+
+- project:
+    name: 'asterisk'
+    branch:
+#        - '11':
+#            build_options: ""
+#            gate-types:
+#                - channel-drivers
+#                - unittests
+#        - '13':
+#            build_options: "-e codec_silk"
+#            gate-types:
+#                - ari
+#                - channel-drivers
+#                - external-mwi
+#                - unittests
+#        - '14':
+#            build_options: "-e codec_silk -e app_statsd"
+#            gate-types:
+#                - ari
+#                - channel-drivers
+#                - external-mwi
+#                - unittests
+#        - 'master':
+#            build_options: "-e app_statsd"
+#            gate-types:
+#                - ari
+#                - channel-drivers
+#                - external-mwi
+#                - unittests
+        - 'jenkinstest':
+            build_options: ""
+            gate-types:
+                - ari
+                - external-mwi
+                - unittests
+    gate-type:
+        - 'unittests':
+            tests: ""
+        - 'ari':
+            tests: "-t tests/rest_api"
+        - 'channel-drivers':
+            tests: "-t tests/channels"
+        - 'external-mwi':
+            tests: "-g mwi_external -t tests/channels/pjsip/publish -t tests/channels/pjsip/subscriptions -t tests/realtime"
+            default_build_options: "{basic_build_options} -d app_voicemail -e res_mwi_external -e res_mwi_external_ami -e res_stasis_mailbox"
+    arch:
+        - '32':
+            bits: '32'
+            not: '64'
+        - '64':
+            bits: '64'
+            not: '32'
+    exclude:
+        - branch: '11'
+          gate-type: 'ari'
+        - branch: '11'in via    putdevp)
+        extra="-J 10.10.8.38"
+        ;&
+    putdev)
+        cmd="ssh $extra -F $HOME/.ssh/devuser_config $@"
+        host=$1
+        gnome-terminal --profile=ssh --geometry=110x34 --title=$host --comman
+          gate-type: 'external-mwi'
+          
+    jobs:
+        - 'check-{name}-{branch}'
+#        - 'gate-{name}-{branch}-{gate-type}'
+#        - 'periodic-{name}-{branch}'
+#        - 'periodic-{name}-doc-{branch}'
+#        - 'periodic-{name}-realtime-{branch}'
+#        - 'periodic-{name}-ref-debug-{branch}'
+
+#
+# Job Templates
+#
+
+# check
+
+- job-template:
+    name: 'check-{name}-{branch}'
+    concurrent: true
+    description: 'Check Asterisk branch {branch}'
+    project-type: workflow
+    sandbox: false
+    
+    parameters:
+        - string:
+            name: PARENT_BUILD_ID
+            default: '0'
+        - string:
+            name: arch
+            default: 'XXX'
+                
+    triggers:
+      - gerrit:
+            server-name: 'Gerrit Internal'
+            trigger-on:
+                - patchset-created-event:
+                    exclude-drafts: true
+                    exclude-trivial-rebase: false
+                    exclude-no-code-change: false
+                - comment-added-contains-event:
+                    comment-contains-value: '^(recheck|reverify)$'
+            silent: false
+            silent-start: true
+            notification-level : 'NONE'
+            override-votes: true
+            gerrit-build-successful-verified-value: 1
+            gerrit-build-failed-verified-value: -1
+            gerrit-build-unstable-verified-value: -1
+            projects:
+                - project-compare-type: 'PLAIN'
+                  project-pattern: 'asterisk'
+                  branches:
+                    - branch-compare-type: 'PLAIN'
+                      branch-pattern: 'jenkinstest'
+                    - branch-compare-type: 'REG_EXP'
+                      branch-pattern: 'certified/({branch})\..*'
+    dsl: |
+        checkAsterisk("{branch}", "{default_build_options} {build_options}")
+
+# gate
+
+- job-template:
+    name: 'gate-{name}-{branch}-{gate-type}'
+    concurrent: true
+    description: 'Asterisk Gate: {branch} {gate-type}'
+    project-type: workflow
+    sandbox: true
+    
+    triggers:
+      - gerrit:
+            server-name: 'Gerrit Internal'
+            trigger-on:
+                - comment-added-event:
+                    approval-category: 'Code-Review'
+                    approval-value: 2
+                - comment-added-contains-event:
+                    comment-contains-value: '^(regate)$'
+            projects:
+                - project-compare-type: 'PLAIN'
+                  project-pattern: 'asterisk'
+                  branches:
+                    - branch-compare-type: 'PLAIN'
+                      branch-pattern: '{branch}'
+                    - branch-compare-type: 'REG_EXP'
+                      branch-pattern: 'certified/({branch})\..*'
+            silent: false
+            silent-start: true
+            notification-level : 'NONE'
+            gerrit-build-successful-verified-value:
+            gerrit-build-failed-verified-value:
+            gerrit-build-unstable-verified-value:
+            gerrit-build-successful-codereview-value: 2
+            gerrit-build-failed-codereview-value: -1
+            gerrit-build-unstable-codereview-value: -1
+    
+    dsl: |
+        gateAsterisk("{branch}", "{gate-type}", "{default_build_options} {build_options}", "{tests}")
+
+# periodic
+
+#- job-template:
+#    name: 'periodic-{name}-{branch}'
+#    concurrent: true
+#    description: '{name} Periodic: {branch}'
+#    project-type: workflow
+#    sandbox: true
+#    
+#    triggers:
+#      - timed: "H 0 * * *"
+#    
+#    dsl: |
+#        runPeriodic("{branch}", "{default_build_options} {build_options}")
+
+# periodic doc
+
+#- job-template:
+#    name: 'periodic-{name}-doc-{branch}'
+#    concurrent: true
+#    description: '{name} Periodic Documentation: {branch}'
+#    project-type: workflow
+#    sandbox: true
+#    
+#    triggers:
+#      - timed: "H 1 * * *"
+#    
+#    dsl: |
+#        runPeriodicDoc("{branch}")
+
+# periodic realtime
+
+#- job-template:
+#    name: 'periodic-{name}-realtime-{branch}'
+#    concurrent: true
+#    description: '{name} Periodic Realtime: {branch}'
+#    project-type: workflow
+#    sandbox: true
+#    
+#    triggers:
+#      - timed: "H 1 * * *"
+#    
+#    dsl: |
+#        runPeriodicRealtime("{branch}", "asterisk", "127.0.0.1", "asterisk", "asterisk-connector")
+
+# periodic ref debug
+
+#- job-template:
+#name: 'periodic-{name}-ref-debug-{branch}'
+#concurrent: true
+#description: '{name} Periodic REF_DEBUG: {branch}'
+#project-type: workflow
+#sandbox: true
+#
+#dsl: |
+#runPeriodicRefDebug("{branch}", "{default_build_options} {build_options}")

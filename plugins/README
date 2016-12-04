@@ -1,0 +1,16 @@
+Thgese are the plugins that enable the status reporting in the Code-Review
+section of the gerrit reviews.
+
+verify-status-jar:  The Gerrit Plugin.
+This plugin is available publically but the public one is compiled for JDK 1.8
+and won't load under JDK 1.7 which is what the gerrit servers are at.
+To install it, follow the quick start at 
+https://github.com/jenkinsci/gerrit-verify-status-reporter-plugin
+
+gerrit-verify-status-reporter.jar:  The Jenkins plugin.
+This is the Jenkins side of the process.  This plugin is also available
+pulically but at the current time, the changes to allow it to be used
+from a pipeline job haven't been merged in.  This jar has them.
+Install from the Manage Plugins/Advanced page in Jenkins.
+
+

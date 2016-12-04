@@ -1,54 +1,20 @@
-#!/usr/bin/env bash
+def call(branch, user, host, name, dsn) {
+	timestamps {
+		node ("periodic && realtime") {
 
-#
-# Changes the global test-config.yaml to convert things to realtime when possible
-#
-# Copyright 2016 (C), Digium, Inc.
-# Joshua Colp <jcolp@digium.com>
-#
-# Licensed under the Apache License, Version 2.0 (the "License"); you may
-# not use this file except in compliance with the License. You may obtain
-# a copy of the License at
-#
-#	http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations
-# under the License.
+			checkoutAsteriskMirror("{branch}", "asterisk")
+			stage("build-asterisk") { sh "sudo /srv/git/infrastructure/jenkins/scripts/build-asterisk.sh {default_build_options} {build_options}" }
 
-DB_USER=$1
-DB_HOST=$2
-DB_NAME=$3
-DB_DSN=$4
+			checkoutTestsuiteMirror("master", "testsuite")
 
-if [ -z "$DB_USER" ]; then
-    echo "The database user must be the first argument."
-    exit 1
-fi
+			stage("clean-database") {
+				sh "psql --username=${user} --host=${host} --db=${name} --command='DROP OWNED BY ${user} CASCADE'"
+			}
 
-if [ -z "$DB_HOST" ]; then
-    echo "The database host must be the second argument."
-    exit 1
-fi
+			stage("create-configs") {
 
-if [ -z "$DB_NAME" ]; then
-    echo "The database name must be the third argument."
-    exit 1
-fi
-
-if [ -z "$DB_DSN" ]; then
-    echo "The database DSN must be the fourth argument."
-    exit 1
-fi
-
-pushd testsuite
-
-# We replace the test-config.yaml with one that enables realtime auto-conversion
-rm -rf test-config.yaml
-
-cat > test-config.yaml << EOF
+				dir("testsuite") {
+					writeFile file: "test-config.yaml", text: """
 global-settings:
     test-configuration: config-realtime
 
@@ -107,13 +73,62 @@ config-realtime:
                 config-section: realtime-config
 
     realtime-config:
-        username: '${DB_USER}'
-        host: '${DB_HOST}'
-        db: '${DB_NAME}'
-        dsn: '${DB_DSN}'
-EOF
+        username: "${user}"
+        host: "${host}"
+        db: "${name}"
+        dsn: "${dsn}"
 
-popd
+"""
+				}				
+				writeFile file: 'config.ini', text: """
+[alembic]
+script_location = asterisk/contrib/ast-db-manage/config
+sqlalchemy.url = postgresql://${user}@${host}/${name}
 
-echo "*** Asterisk Test Suite Ready With Realtime Support ***"
+[loggers]
+keys = root,sqlalchemy,alembic
 
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = WARN
+handlers = console
+qualname =
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+
+[logger_alembic]
+level = INFO
+handlers =
+qualname = alembic
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
+
+"""
+			}
+
+			stage("run-alembic") {
+				echo "Creating database tables"
+				sh "alembic -c config.ini upgrade head"
+				sh "rm -rf config.ini"
+			}
+		
+			runTestsuite("-t tests/channels/pjsip -G realtime-incompatible")
+		}
+	}
+}
