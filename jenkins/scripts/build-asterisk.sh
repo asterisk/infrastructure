@@ -133,7 +133,7 @@ COMMON_CONFIGURE_ARGS="--sysconfdir=/etc --with-pjproject-bundled \
 	--with-externals-cache=/srv/cache/externals \
 "
 if $DEBUG ; then
-	COMMON_CONFIGURE_ARGS="$COMMON_CONFIGURE_ARGS --enable-dev-mode --enable-coverage"
+	COMMON_CONFIGURE_ARGS="$COMMON_CONFIGURE_ARGS --enable-dev-mode"
 fi
 echo "*** $(date) ./configure ${COMMON_CONFIGURE_ARGS}"
 ./configure ${COMMON_CONFIGURE_ARGS}
