@@ -33,6 +33,20 @@ class globals {
 		other: [
 			exclude_tests: ["tests/channels", "tests/realtime", "tests/rest_api"],
 			build_options: default_build_options
+		],
+		doc: [
+			build_options: default_build_options
+		],
+		realtime: [
+			include_tests: ["tests/channels/pjsip"],
+			exclude_tags: ["realtime-incompatible"],
+			build_options: default_build_options,
+			db: [
+				user: "asterisk",
+				host: "localhost",
+				dbname: "asterisk",
+				dsn: "asterisk"
+			]
 		]
 	]
 	
@@ -44,21 +58,19 @@ class globals {
 			build_options: basic_build_options,
 			gate_types: [
 				"chandrv",
-				"unittst"
 			],
 			periodic_types: [
 				"unittst",
-				"pjsip",
 				"sip",
 				"iax2_local",
 				"other"
 			],
-			gerrit_trigger: "Gerrit Internal"],
+			gerrit_trigger: "Gerrit Public"
+		],
 		'13': [
 			build_options: "${basic_build_options} -e codec_silk",
 			gate_types: [
 				"chandrv",
-				"unittst",
 				"extmwi",
 				"ari"
 			],
@@ -69,14 +81,16 @@ class globals {
 				"iax2_local",
 				"ari",
 				"extmwi",
-				"other"
+				"other",
+				"realtime",
+				"doc"
 			],
-			gerrit_trigger: "Gerrit Internal"],
+			gerrit_trigger: "Gerrit Public"
+		],
 		'14': [
 			build_options: "${basic_build_options} -e codec_silk -e app_statsd",
 			gate_types: [
 				"chandrv",
-				"unittst",
 				"extmwi",
 				"ari"
 			],
@@ -87,14 +101,16 @@ class globals {
 				"iax2_local",
 				"ari",
 				"extmwi",
-				"other"
+				"other",
+				"realtime",
+				"doc"
 			],
-			gerrit_trigger: "Gerrit Internal"],
+			gerrit_trigger: "Gerrit Public"
+		],
 		'master': [
 			build_options: "${basic_build_options} -e codec_silk -e app_statsd",
 			gate_types: [
 				"chandrv",
-				"unittst",
 				"extmwi",
 				"ari"
 			],
@@ -105,28 +121,14 @@ class globals {
 				"iax2_local",
 				"ari",
 				"extmwi",
-				"other"
+				"other",
+				"realtime"
 			],
-			gerrit_trigger: "Gerrit Internal"],
-		'jenkinstest': [
-			build_options: "",
-			gate_types: [
-				"unittst",
-				"extmwi"
-			],
-			periodic_types: [
-				"unittst",
-				"pjsip",
-				"sip",
-				"iax2_local",
-				"ari",
-				"extmwi",
-				"other"
-			],
-			gerrit_trigger: "Gerrit Internal"]
+			gerrit_trigger: "Gerrit Public"
+		]
 	]
 
 	def static testsuite = [
-		gerrit_trigger: "Gerrit Internal"
+		gerrit_trigger: "Gerrit Public"
 	]
 }

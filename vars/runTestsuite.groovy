@@ -1,4 +1,3 @@
-
 def call(test) {
 	stage("run-testsuite") {
 		dir("testsuite") {
@@ -22,21 +21,33 @@ def call(test) {
 				command_line += " -t ${t}"
 			}
 			
-			println command_line
-			
-			return
-			
+			if (test.include_tags) {
+				for (g in test.include_tags) {
+					command_line += " -g ${g}"
+				}
+			}
+			if (test.exclude_tags) {
+				for (G in test.exclude_tags) {
+					command_line += " -G ${G}"
+				}
+			}
+			if (test.extra_args) {
+				command_line += " ${test.extra_args}"
+			}
+				
 			try {
-				sh """
+				sh """\
 					sudo chown -R jenkins:users . 
 					[ -d /tmp/asterisk-testsuite ] && sudo chown -R jenkins:users /tmp/asterisk-testsuite
-					sudo ./runtests.py ${testoptions}
+					sudo ./runtests.py ${command_line}
 				""".stripIndent()
 			} catch(e) {
-				println "Error running runtests.py"
+				println "Error running runtests.py ${command_line}"
+				println e.toString()
 			} finally {
 				try {
-					sh '''set +e
+					sh '''\
+						set +e
 						sudo killall -9 asterisk
 						sudo pkill -9 -f runtests.py
 						sudo pkill -9 -f test_runner.py
@@ -53,7 +64,6 @@ def call(test) {
 			junit testResults: "asterisk-test-suite-report.xml",
 				healthScaleFactor: 1.0,
 				keepLongStdio: true
-			stash includes: 'asterisk-test-suite-report.xml', name: 'tetssuite-results', useDefaultExcludes: false
 		}
 	}
 }

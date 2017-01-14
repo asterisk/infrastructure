@@ -1,6 +1,37 @@
 import globals
 
 println "Creating views"
+
+dashboardView(' Summary') {
+	jobs {
+		regex(/.*/)
+	}
+	columns {
+		name()
+		status()
+		weather()
+		testResult(1)
+		lastBuildConsole()
+		lastSuccess()
+		lastFailure()
+		lastDuration()
+		progressBar()
+	}
+	configure { view ->
+		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
+			'id'('dashboard_portlet_44597')
+			'name'(' ')
+			'columnCount'('4')
+			'fillColumnFirst'('true')
+		}
+	}
+	topPortlets {
+		jenkinsJobsList {
+			displayName('Detail')
+		}
+	}
+}
+
 dashboardView('Checks') {
 	jobs {
 		regex(/check-.*/)
@@ -9,15 +40,24 @@ dashboardView('Checks') {
 		name()
 		status()
 		weather()
+		testResult(1)
+		lastBuildConsole()
 		lastSuccess()
 		lastFailure()
 		lastDuration()
-		lastBuildNode()
 		progressBar()
+	}
+	configure { view ->
+		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
+			'id'('dashboard_portlet_44590')
+			'name'(' ')
+			'columnCount'('4')
+			'fillColumnFirst'('true')
+		}
 	}
 	topPortlets {
 		jenkinsJobsList {
-			displayName('Checks')
+			displayName('Detail')
 		}
 	}
 }
@@ -30,15 +70,24 @@ dashboardView('Gates') {
 		name()
 		status()
 		weather()
+		testResult(1)
+		lastBuildConsole()
 		lastSuccess()
 		lastFailure()
 		lastDuration()
-		lastBuildNode()
 		progressBar()
+	}
+	configure { view ->
+		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
+			'id'('dashboard_portlet_44591')
+			'name'(' ')
+			'columnCount'('4')
+			'fillColumnFirst'('true')
+		}
 	}
 	topPortlets {
 		jenkinsJobsList {
-			displayName('Gates')
+			displayName('Detail')
 		}
 	}
 }
@@ -51,15 +100,25 @@ dashboardView('Periodics') {
 		name()
 		status()
 		weather()
+		testResult(1)
+		lastBuildConsole()
 		lastSuccess()
 		lastFailure()
 		lastDuration()
-		lastBuildNode()
 		progressBar()
+		buildButton()
+	}
+	configure { view ->
+		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
+			'id'('dashboard_portlet_44592')
+			'name'(' ')
+			'columnCount'('4')
+			'fillColumnFirst'('true')
+		}
 	}
 	topPortlets {
 		jenkinsJobsList {
-			displayName('Periodics')
+			displayName('Detail')
 		}
 	}
 }
@@ -112,7 +171,7 @@ for (br in globals.ast_branches) {
 }
 
 println "Creating testsuite check jobs"
-pipelineJob("check-tst") {
+pipelineJob("check-testsuite") {
 	definition {
 		cps {
 			script("checkTestsuite()")
@@ -154,7 +213,7 @@ pipelineJob("check-tst") {
 		}
 	}
 }
-pipelineJob("check-tst-pep8") {
+pipelineJob("check-testsuite-pep8") {
 	definition {
 		cps {
 			script("""
@@ -241,13 +300,21 @@ println "Creating asterisk periodic jobs"
 for (br in globals.ast_branches) {
 	for (pt in br.value.periodic_types) {
 		pipelineJob("periodic-ast-${br.key}-${pt}") {
+			triggers {
+				cron('H 1 * * *')
+			}
 			definition {
 				cps {
-					script("periodicAsterisk(\"${br.key}\", \"${pt}\")")
+					script("""\
+						node ("periodic-${pt}") {
+							timestamps {
+								periodicAsterisk("${br.key}", "${pt}")
+							}
+						}
+					""".stripIndent())
 					sandbox(true)
 				}
 			}
 		}
 	}
 }
-
