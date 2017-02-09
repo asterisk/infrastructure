@@ -35,7 +35,7 @@ start_asterisk() {
 		# Mac OSX
 		launchctl load -w /Library/LaunchDaemons/org.asterisk.asterisk.plist
 	else
-		asterisk -gn
+		asterisk -gnddddddddddvvvvvvvvvvv
 	fi
 
 	sleep 1
@@ -96,6 +96,7 @@ write = system,call,agent,user,config,command,reporting,originate
 EOF
 
 	cat > /etc/asterisk/logger.conf << EOF
+[logfiles]
 full => notice,warning,error,debug,verbose
 EOF
 
