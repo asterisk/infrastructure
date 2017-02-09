@@ -96,6 +96,7 @@ write = system,call,agent,user,config,command,reporting,originate
 EOF
 
 	cat > /etc/asterisk/logger.conf << EOF
+[logfiles]
 full => notice,warning,error,debug,verbose
 EOF
 
