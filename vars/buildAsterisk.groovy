@@ -91,7 +91,7 @@ def call(branch, buildopts) {
 			def common_config_args = "--sysconfdir=/etc --with-pjproject-bundled \
 					--with-sounds-cache=/srv/cache/sounds --with-externals-cache=/srv/cache/externals"
 			if (parameters.debug) {
-				common_config_args += " --enable-dev-mode --enable-coverage"
+				common_config_args += " --enable-dev-mode"
 			}
 			sh "./configure ${common_config_args}"
 			sh "sudo ${make} uninstall"
