@@ -1,10 +1,7 @@
 def call(branch, user, host, name, dsn) {
 
-	stage("clean-database") {
+	stage("realtime-setup") {
 		sh "psql --username=${user} --host=${host} --db=${name} --command='DROP OWNED BY ${user} CASCADE'"
-	}
-
-	stage("create-configs") {
 
 		dir("testsuite") {
 			writeFile file: "test-config.yaml", text: """\
@@ -113,9 +110,7 @@ def call(branch, user, host, name, dsn) {
 		datefmt = %H:%M:%S
 		
 		""".stripIndent()
-	}
 
-	stage("run-alembic") {
 		echo "Creating database tables"
 		sh "alembic -c config.ini upgrade head"
 		sh "rm -rf config.ini"

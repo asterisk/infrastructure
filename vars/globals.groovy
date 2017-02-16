@@ -45,7 +45,7 @@ class globals {
 				user: "asterisk",
 				host: "localhost",
 				dbname: "asterisk",
-				dsn: "asterisk"
+				dsn: "asterisk-connector"
 			]
 		]
 	]

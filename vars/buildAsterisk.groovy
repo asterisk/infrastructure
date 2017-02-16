@@ -82,7 +82,7 @@ def call(branch, buildopts) {
 			}
 		}
 
-		stage("distclean configure") {
+		stage("distclean configure menuselect") {
 			try {
 				sh "${make} distclean || :"
 			} catch (e) {
@@ -96,9 +96,7 @@ def call(branch, buildopts) {
 			sh "./configure ${common_config_args}"
 			sh "sudo ${make} uninstall"
 			sh "sudo ${make} uninstall-all"
-		}
 
-		stage("menuselect") {
 			sh "${make} menuselect.makeopts"
 
 			def local_cat_enables = [ "MENUSELECT_BRIDGES", "MENUSELECT_CEL", "MENUSELECT_CDR", 
