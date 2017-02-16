@@ -14,7 +14,7 @@ def parse(buildopts) {
 
 	def ds = ""
 	for (d in disables) {
-		ds += " --disable ${d[1]}"
+		ds += " --disable ${d}"
 	}
 
 	return [ debug: debug, enables: es, disables: ds ]
