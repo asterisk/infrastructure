@@ -55,7 +55,7 @@ class globals {
 	def static ast_branches = [
 
 		'11': [
-			build_options: basic_build_options,
+			build_options: "$(basic_build_options) -d chan_gtalk -d chan_jingle",
 			gate_types: [
 				"chandrv",
 			],
