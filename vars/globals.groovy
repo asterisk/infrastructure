@@ -59,12 +59,6 @@ class globals {
 			gate_types: [
 				"chandrv",
 			],
-			periodic_types: [
-				"unittst",
-				"sip",
-				"iax2_local",
-				"other"
-			],
 			gerrit_trigger: "Gerrit Public"
 		],
 		'13': [
