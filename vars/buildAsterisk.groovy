@@ -1,5 +1,3 @@
-
-
 @NonCPS
 def parse(buildopts) {
 	def bo = " " + buildopts + " "
@@ -27,7 +25,9 @@ def call(branch, buildopts) {
 	def jobs = sh script: 'nproc', returnStdout: true
 	jobs = jobs.trim()
 	println "Processors: ${jobs}"
-	jobs++
+	if (jobs > 4) {
+		jobs--
+	}
 	println "Jobservers: ${jobs}"
 
 	def make
@@ -42,134 +42,127 @@ def call(branch, buildopts) {
 	}
 	make = make.trim()
 
-	sh "sudo mkdir -p /srv/cache/externals /srv/cache/sounds || :"
-	sh "sudo chown -R jenkins:users /srv/cache"
-	sh "sudo chown -R jenkins:users asterisk"
+	sh """\
+		sudo mkdir -p /srv/cache/externals /srv/cache/sounds || :
+		sudo chown -R jenkins:users /srv/cache
+		sudo chown -R jenkins:users asterisk
+	""".stripIndent();
 
 	dir("asterisk") {
 		stage("check-alembic") {
-			def alembic = ""
-			try {
-				alembic = sh script: "which alembic 2>/dev/null", returnStdout: true
-			} catch(e) {
-				println "Alembic not installed"
-			}
-			alembic = alembic.trim()
+			sh '''\
+				ALEMBIC=`which alembic 2>/dev/null || :`
+				if [ x"$ALEMBIC" = x ] ; then
+					echo "Alembic not installed"
+					exit 1
+				fi
+				cd contrib/ast-db-manage
+				find -name *.pyc -delete
+				out=`alembic -c config.ini.sample branches`
+				if [ x$out != x ] ; then
+					>&2 echo "Alembic branches were found for config"
+					>&2 echo $out
+					exit 1
+				fi
+			
+				out=`alembic -c cdr.ini.sample branches`
+				if [ x$out != x ] ; then
+					>&2 echo "Alembic branches were found for cdr"
+					>&2 echo $out
+					exit 1
+				fi
 
-			if (alembic.length() && fileExists("contrib/ast-db-manage/config.ini.sample")) {
-
-				dir("contrib/ast-db-manage") {
-					sh "rm -rf config/*.pyc cdr/*.pyc voicemail/*.pyc || :"
-					def out
-					out = sh script: "alembic -c config.ini.sample branches", returnStdout: true
-					if (out && out.length()) {
-						println "Alembic branches were found for config"
-						error out
-					}
-					out = sh script: "alembic -c cdr.ini.sample branches", returnStdout: true
-					if (out && out.length()) {
-						println "Alembic branches were found for cdr"
-						error out
-					}
-					out = sh script: "alembic -c voicemail.ini.sample branches", returnStdout: true
-					if (out && out.length()) {
-						println "Alembic branches were found for voicemail"
-						error out
-					}
-				}
-			}
+				out=`alembic -c voicemail.ini.sample branches`
+				if [ x$out != x ] ; then
+					>&2 echo "Alembic branches were found for voicemail"
+					>&2 echo $out
+					exit 1
+				fi
+			'''.stripIndent()
 		}
 
 		stage("distclean configure menuselect") {
-			try {
-				sh "${make} distclean || :"
-			} catch (e) {
-				println "Distclean failed but continuing"
-			}
-			def common_config_args = "--sysconfdir=/etc --with-pjproject-bundled \
-					--with-sounds-cache=/srv/cache/sounds --with-externals-cache=/srv/cache/externals"
-			if (parameters.debug) {
-				common_config_args += " --enable-dev-mode"
-			}
-			sh "./configure ${common_config_args}"
-			sh "sudo ${make} uninstall"
-			sh "sudo ${make} uninstall-all"
+			sh """\
+				common_config_args="--sysconfdir=/etc --with-pjproject-bundled"
+				common_config_args+=" --with-sounds-cache=/srv/cache/sounds --with-externals-cache=/srv/cache/externals"
 
-			sh "${make} menuselect.makeopts"
+				if [ ${parameters.debug} = true ] ; then
+					common_config_args+=" --enable-dev-mode"
+				fi
 
-			def local_cat_enables = [ "MENUSELECT_BRIDGES", "MENUSELECT_CEL", "MENUSELECT_CDR", 
-				"MENUSELECT_CHANNELS", "MENUSELECT_CODECS", "MENUSELECT_FORMATS", "MENUSELECT_FUNCS",
-				"MENUSELECT_PBX", "MENUSELECT_RES", "MENUSELECT_UTILS" ]
+				${make} distclean || :
+				export WGET_EXTRA_ARGS="--quiet"
+				./configure \${common_config_args} >config_summary.log
+				sudo ${make} uninstall || :
+				sudo ${make} uninstall-all || :
+				${make} menuselect.makeopts
 
-			def local_cat_disables = []
+				local_cat_enables="MENUSELECT_BRIDGES MENUSELECT_CEL MENUSELECT_CDR" 
+				local_cat_enables+=" MENUSELECT_CHANNELS MENUSELECT_CODECS MENUSELECT_FORMATS MENUSELECT_FUNCS"
+				local_cat_enables+=" MENUSELECT_PBX MENUSELECT_RES MENUSELECT_UTILS"
+
+				if [ ${parameters.debug} = true ] ; then
+					local_enables="DONT_OPTIMIZE MALLOC_DEBUG BETTER_BACKTRACES TEST_FRAMEWORK DO_CRASH"
+					local_cat_enables+=" MENUSELECT_TESTS"
+				fi
+
+				local_cat_disables=""
+				local_disables="res_mwi_external codec_opus codec_silk codec_g729a codec_siren7"
+				local_disables+=" codec_siren14 res_digium_phone chan_vpb"
+
+				es=""
+				for ecat in \$local_cat_enables ; do
+					es+=" --enable-category \${ecat}"
+				done
+
+				for e in \${local_enables} ; do
+					es+=" --enable \${e}"
+				done
 			
-			def local_enables = []
-			if (parameters.debug) {
-				local_enables = [ "DONT_OPTIMIZE", "MALLOC_DEBUG", "BETTER_BACKTRACES", "TEST_FRAMEWORK",
-					"DO_CRASH" ]
-				local_cat_enables << "MENUSELECT_TESTS"
-			}
+				if [ \${#es} -ne 0 ] ; then
+					menuselect/menuselect \${es} menuselect.makeopts
+				fi
 
-			def local_disables = [ "res_mwi_external", "codec_opus", "codec_silk", "codec_g729a",
-				"codec_siren7", "codec_siren14", "res_digium_phone", "chan_vpb" ]
-			
-			def es = ""
-			for (ecat in local_cat_enables) {
-				es += " --enable-category ${ecat}"
-			}
-			for (e in local_enables) {
-				es += " --enable ${e}"
-			}
-			if (es.length()) {
-				sh "menuselect/menuselect ${es} menuselect.makeopts"
-			}
+				ds=""
+				for dcat in \${local_cat_disables} ; do
+					ds+=" --disable-category \${dcat}"
+				done
+				for d in \${local_disables} ; do
+					ds+=" --disable \${d}"
+				done
 
-			def ds = ""
-			for (dcat in local_cat_disables) {
-				ds += " --disable-category ${dcat}"
-			}
-			for (d in local_disables) {
-				ds += " --disable ${d}"
-			}
-			if (ds.length()) {
-				sh "menuselect/menuselect ${ds} menuselect.makeopts"
-			}
+				if [ \${#ds} -ne 0 ] ; then
+					menuselect/menuselect \${ds} menuselect.makeopts
+				fi
 	
-			if (parameters.enables.length()) {
-				sh "menuselect/menuselect ${parameters.enables} menuselect.makeopts"
-			}
+				if [ ${parameters.enables.length()} -ne 0 ] ; then
+					menuselect/menuselect ${parameters.enables} menuselect.makeopts
+				fi
 
-			if (parameters.disables.length()) {
-				sh "menuselect/menuselect ${parameters.disables} menuselect.makeopts"
-			}
+				if [ ${parameters.disables.length()} -ne 0 ] ; then
+					menuselect/menuselect ${parameters.disables} menuselect.makeopts
+				fi
+			""".stripIndent()
+
+			archiveArtifacts allowEmptyArchive: true, artifacts: 'config.log config_summary.log menuselect.makeopts menuselect.makedeps makeopts', defaultExcludes: false, fingerprint: true
 		}
 
 		stage("make") {
-			try {
-				sh "${make} -j${jobs}"
-			} catch (e) {
-				sh "${make} -j${jobs} NOISY_BUILD=yes"
-			}
+			sh "${make} -j${jobs} || ${make} -j${jobs} NOISY_BUILD=yes"
 		}
 
 		stage("validate-docs") {
-			if (fileExists("doc/core-en_US.xml")) {
-				try {
-					sh "${make} validate-docs"
-				} catch (e) {
-					sh "${make} NOISY_BUILD=yes validate-docs"
-				}
-			}
+			sh """\
+				if [ -f "doc/core-en_US.xml" ] ; then
+					${make} validate-docs || ${make} NOISY_BUILD=yes validate-docs
+				fi
+			""".stripIndent()
 		}
 
 		stage("install") {
-			env.WGET_EXTRA_ARGS = "--quiet"
-			try {
-				sh "sudo ${make} install"
-			} catch (e) {
-				sh "sudo ${make} NOISY_BUILD=yes install"
-			}
-			sh '''\
+			sh """\
+				export WGET_EXTRA_ARGS="--quiet"
+				sudo ${make} install || sudo ${make} NOISY_BUILD=yes install 
 				sudo ${make} samples
 				${make} clean
 				set +e
@@ -181,7 +174,7 @@ def call(branch, buildopts) {
 				sudo chown -R jenkins:users /etc/asterisk
 				sudo chown -R jenkins:users /usr/sbin/asterisk
 				sudo ldconfig
-				'''.stripIndent()
+				""".stripIndent()
 		}
 	}
 }
