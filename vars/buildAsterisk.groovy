@@ -42,8 +42,6 @@ def call(branch, buildopts) {
 	}
 	make = make.trim()
 
-	env.PATH = "/usr/lib/ccache:${env.PATH}:/usr/local/bin:/usr/sbin:/usr/local/sbin"
-
 	sh "sudo mkdir -p /srv/cache/externals /srv/cache/sounds || :"
 	sh "sudo chown -R jenkins:users /srv/cache"
 	sh "sudo chown -R jenkins:users asterisk"
@@ -171,8 +169,9 @@ def call(branch, buildopts) {
 			} catch (e) {
 				sh "sudo ${make} NOISY_BUILD=yes install"
 			}
-			sh "sudo ${make} samples"
-			sh '''
+			sh '''\
+				sudo ${make} samples
+				${make} clean
 				set +e
 				sudo chown -R jenkins:users /usr/lib/asterisk
 				sudo chown -R jenkins:users /var/lib/asterisk

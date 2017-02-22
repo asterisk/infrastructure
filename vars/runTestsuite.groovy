@@ -64,6 +64,10 @@ def call(test) {
 			junit testResults: "asterisk-test-suite-report.xml",
 				healthScaleFactor: 1.0,
 				keepLongStdio: true
+			sh '''\
+				sudo ./cleanup-test-remnants.sh
+				sudo rm -rf /tmp/asterisk-testsuite
+			'''.stripIndent()
 		}
 	}
 }
