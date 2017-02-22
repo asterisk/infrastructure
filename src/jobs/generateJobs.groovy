@@ -125,44 +125,48 @@ dashboardView('Periodics') {
 
 println "Creating asterisk check jobs"
 for (br in globals.ast_branches) {
-	pipelineJob("check-ast-${br.key}") {
-		definition {
-			cps {
-				script("checkAsteriskControl()")
-				sandbox(true)
-			}
-		}
-		parameters {
-			stringParam('PARENT_BUILD_ID', '0', 'Must be 0 for control job')
-			stringParam('BRANCH', br.key, 'Branch')
-		}
-		triggers {
-			gerritTrigger {
-				serverName(br.value.gerrit_trigger)
-				silentMode(true)
-				silentStartMode(true)
-				gerritBuildFailedVerifiedValue(-1)
-				gerritBuildSuccessfulVerifiedValue(1)
-				gerritBuildUnstableVerifiedValue(-1)
-				notificationLevel("NONE")
-				triggerOnEvents {
-					commentAddedContains { commentAddedCommentContains('^(recheck|reverify)$') }
+	for (arch in br.value.arches) {
+		pipelineJob("check-ast-${br.key}-${arch}") {
+			definition {
+				cps {
+					script("checkAsterisk('${br.key}', '${arch}')")
+					sandbox(true)
 				}
-				gerritProjects {
-					gerritProject {
-						compareType("PLAIN")
-						pattern("asterisk")
-						branches {
-							branch {
-								compareType("PLAIN")
-								pattern(br.key)
-							}
-							branch {
-								compareType("REG_EXP")
-								pattern("certified/${br.key}")
-							}
+			}
+			triggers {
+				gerritTrigger {
+					serverName(br.value.gerrit_trigger)
+					silentMode(true)
+					silentStartMode(true)
+					gerritBuildFailedVerifiedValue(0)
+					gerritBuildSuccessfulVerifiedValue(0)
+					gerritBuildUnstableVerifiedValue(0)
+					notificationLevel("NONE")
+					triggerOnEvents {
+						commentAddedContains { commentAddedCommentContains('^(recheck|reverify)$') }
+						changeRestored()
+						patchsetCreated {
+							excludeDrafts(false)
+							excludeTrivialRebase(false)
+							excludeNoCodeChange(true)
 						}
-						disableStrictForbiddenFileVerification(false)
+					}
+					gerritProjects {
+						gerritProject {
+							compareType("PLAIN")
+							pattern("asterisk")
+							branches {
+								branch {
+									compareType("PLAIN")
+									pattern(br.key)
+								}
+								branch {
+									compareType("REG_EXP")
+									pattern("certified/${br.key}")
+								}
+							}
+							disableStrictForbiddenFileVerification(false)
+						}
 					}
 				}
 			}
@@ -188,12 +192,11 @@ pipelineJob("check-testsuite") {
 			gerritBuildUnstableVerifiedValue(-1)
 			notificationLevel("NONE")
 			triggerOnEvents {
-				draftPublished()
 				changeRestored()
 				patchsetCreated {
 					excludeDrafts(false)
-					excludeNoCodeChange(true)
 					excludeTrivialRebase(false)
+					excludeNoCodeChange(true)
 				}
 				commentAddedContains { commentAddedCommentContains('^(recheck|reverify)$') }
 			}
@@ -222,6 +225,39 @@ pipelineJob("check-testsuite-pep8") {
 			sandbox(false)
 		}
 	}
+	triggers {
+		gerritTrigger {
+			serverName(globals.testsuite.gerrit_trigger)
+			silentMode(true)
+			silentStartMode(true)
+			gerritBuildFailedVerifiedValue(-1)
+			gerritBuildSuccessfulVerifiedValue(1)
+			gerritBuildUnstableVerifiedValue(-1)
+			notificationLevel("NONE")
+			triggerOnEvents {
+				changeRestored()
+				patchsetCreated {
+					excludeDrafts(false)
+					excludeTrivialRebase(false)
+					excludeNoCodeChange(true)
+				}
+				commentAddedContains { commentAddedCommentContains('^(recheck|reverify)$') }
+			}
+			gerritProjects {
+				gerritProject {
+					compareType("PLAIN")
+					pattern("testsuite")
+					branches {
+						branch {
+							compareType("PLAIN")
+							pattern("master")
+						}
+					}
+					disableStrictForbiddenFileVerification(false)
+				}
+			}
+		}
+	}
 }
 
 println "Creating asterisk gate jobs"
@@ -230,68 +266,53 @@ for (br in globals.ast_branches) {
 		pipelineJob("gate-ast-${br.key}-${gt}") {
 			definition {
 				cps {
-					script("gateAsteriskControl()")
+					script("gateAsterisk('${br.key}', '${gt}')")
 					sandbox(true)
 				}
 			}
-			parameters {
-				stringParam('PARENT_BUILD_ID', '0', 'Must be 0 for control job')
-				stringParam('BRANCH', br.key, 'Branch')
-			}
-		}
-	}
-	pipelineJob("gate-ast-${br.key}") {
-		definition {
-			cps {
-				script("gateAsteriskControl()")
-				sandbox(true)
-			}
-		}
-		parameters {
-			stringParam('PARENT_BUILD_ID', '0', 'Must be 0 for control job')
-			stringParam('BRANCH', br.key, 'Branch')
-		}
-		triggers {
-			gerritTrigger {
-				serverName(br.value.gerrit_trigger)
-				silentMode(true)
-				silentStartMode(true)
-				gerritBuildFailedVerifiedValue(-1)
-				gerritBuildSuccessfulVerifiedValue(2)
-				gerritBuildUnstableVerifiedValue(-1)
-				notificationLevel("NONE")
-				triggerOnEvents {
-					draftPublished()
-					changeRestored()
-					patchsetCreated {
-						excludeDrafts(false)
-						excludeNoCodeChange(true)
-						excludeTrivialRebase(false)
-					}
-					commentAdded {
-						verdictCategory("CodeReview")
-						commentAddedTriggerApprovalValue("2")
-					}
-					commentAddedContains { commentAddedCommentContains('^regate$') }
-				}
-				gerritProjects {
-					gerritProject {
-						compareType("PLAIN")
-						pattern("asterisk")
-						branches {
-							branch {
-								compareType("PLAIN")
-								pattern(br.key)
-							}
-							branch {
-								compareType("REG_EXP")
-								pattern("certified/${br.key}")
-							}
+			triggers {
+				gerritTrigger {
+					serverName(br.value.gerrit_trigger)
+					silentMode(true)
+					silentStartMode(true)
+					gerritBuildFailedVerifiedValue(0)
+					gerritBuildSuccessfulVerifiedValue(0)
+					gerritBuildUnstableVerifiedValue(0)
+					notificationLevel("NONE")
+					triggerOnEvents {
+						draftPublished()
+						changeRestored()
+						patchsetCreated {
+							excludeDrafts(false)
+							excludeNoCodeChange(true)
+							excludeTrivialRebase(false)
 						}
-						disableStrictForbiddenFileVerification(false)
+						commentAdded {
+							verdictCategory("CodeReview")
+							commentAddedTriggerApprovalValue("2")
+						}
+						commentAddedContains { commentAddedCommentContains('^regate$') }
+					}
+					gerritProjects {
+						gerritProject {
+							compareType("PLAIN")
+							pattern("asterisk")
+							branches {
+								branch {
+									compareType("PLAIN")
+									pattern(br.key)
+								}
+								branch {
+									compareType("REG_EXP")
+									pattern("certified/${br.key}")
+								}
+							}
+							disableStrictForbiddenFileVerification(false)
+						}
 					}
 				}
 			}
+	
 		}
 	}
 }
@@ -305,13 +326,7 @@ for (br in globals.ast_branches) {
 			}
 			definition {
 				cps {
-					script("""\
-						node ("periodic-${pt}") {
-							timestamps {
-								periodicAsterisk("${br.key}", "${pt}")
-							}
-						}
-					""".stripIndent())
+					script("periodicAsterisk('${br.key}', '${pt}')")
 					sandbox(true)
 				}
 			}

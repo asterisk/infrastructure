@@ -50,8 +50,6 @@ class globals {
 		]
 	]
 	
-	def static arches = [ "32", "64" ]
-
 	def static ast_branches = [
 
 		'11': [
@@ -59,12 +57,15 @@ class globals {
 			gate_types: [
 				"chandrv",
 			],
+			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
 		],
 		'13': [
 			build_options: "${basic_build_options} -e codec_silk",
 			gate_types: [
-				"chandrv",
+				"pjsip",
+				"sip",
+				"iax2_local",
 				"extmwi",
 				"ari"
 			],
@@ -79,12 +80,15 @@ class globals {
 				"realtime",
 				"doc"
 			],
+			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
 		],
 		'14': [
 			build_options: "${basic_build_options} -e codec_silk -e app_statsd",
 			gate_types: [
-				"chandrv",
+				"pjsip",
+				"sip",
+				"iax2_local",
 				"extmwi",
 				"ari"
 			],
@@ -99,12 +103,15 @@ class globals {
 				"realtime",
 				"doc"
 			],
+			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
 		],
 		'master': [
 			build_options: "${basic_build_options} -e codec_silk -e app_statsd",
 			gate_types: [
-				"chandrv",
+				"pjsip",
+				"sip",
+				"iax2_local",
 				"extmwi",
 				"ari"
 			],
@@ -118,6 +125,7 @@ class globals {
 				"other",
 				"realtime"
 			],
+			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
 		]
 	]
