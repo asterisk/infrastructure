@@ -164,7 +164,7 @@ def call(branch, buildopts) {
 				export WGET_EXTRA_ARGS="--quiet"
 				sudo ${make} install || sudo ${make} NOISY_BUILD=yes install 
 				sudo ${make} samples
-				${make} clean
+				git clean -fdx
 				set +e
 				sudo chown -R jenkins:users /usr/lib/asterisk
 				sudo chown -R jenkins:users /var/lib/asterisk
