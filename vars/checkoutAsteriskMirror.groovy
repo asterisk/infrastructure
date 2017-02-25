@@ -7,6 +7,7 @@ def call(branch, destination) {
         	branches: [[name: branch]],
         	doGenerateSubmoduleConfigurations: false,
         	extensions: [
+				[$class: 'PruneStaleBranch'],
 	        	[$class: 'RelativeTargetDirectory', relativeTargetDir: destination],
             	[$class: 'CleanBeforeCheckout'],
             	[$class: 'CloneOption', shallow: true]
@@ -14,6 +15,9 @@ def call(branch, destination) {
         	submoduleCfg: [],
         	userRemoteConfigs: [[url: 'git://git.asterisk.org/asterisk/asterisk.git']]
     	]
+		dir (destination) {
+			sh "git gc --prune=all || : "
+		}
     }
 }
 

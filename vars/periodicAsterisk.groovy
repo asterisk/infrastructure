@@ -1,21 +1,28 @@
 import globals
 
 def call(branch, periodic_type) {
-	
-	node ("periodic-${periodic_type}") {
-		timestamps {
-			manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
+	timestamps {
 			
 			if (periodic_type == "doc") {
 			//		runPeriodicDoc(branch)
 				return
 			}
 			
+		node("build && 64-bit") {
+			manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
 			checkoutAsteriskMirror(branch, "asterisk")
 			
 			def build_options = globals.test_options[periodic_type].build_options ?: globals.default_build_options
-			buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}")
+			sh "sudo rm -rf asterisk-install || : "
+			sh "mkdir asterisk-install || : "
+			buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options} DESTDIR ${WORKSPACE}/asterisk-install")
+			stashAsteriskFromInstall("asterisk-install", "asterisk-install")
+		}
 
+		node ("periodic-${periodic_type} && 64-bit") {
+			manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
+			installAsteriskFromStash("asterisk-install", "asterisk-install", "")
+			
 			if (periodic_type == "unittst") {
 				runAsteriskUnittests()
 				return;

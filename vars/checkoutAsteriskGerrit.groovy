@@ -11,6 +11,7 @@ def call(branch, refspec, destination) {
 			branches: [[name: branch]],
 			doGenerateSubmoduleConfigurations: false,
 			extensions: [
+				[$class: 'PruneStaleBranch'],
 				[$class: 'RelativeTargetDirectory', relativeTargetDir: destination],
 				[$class: 'CleanBeforeCheckout']
 			],
@@ -18,5 +19,8 @@ def call(branch, refspec, destination) {
 			userRemoteConfigs: [
 				[name: 'gerrit', refspec: "+${refspec}:refs/heads/${branch}", url: "${url}/${env.GERRIT_PROJECT}"]]
 		]
+		dir (destination) {
+			sh "git gc --prune=all || : "
+		}
 	}
 }

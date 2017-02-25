@@ -4,7 +4,8 @@ def parse(buildopts) {
 	def debug = (bo =~ /.*\s+-v\s+.*/).matches()
 	def enables = (bo =~ /\s+-e\s+([^ ]+)/).collect { it[1] }
 	def disables = (bo =~ /\s+-d\s+([^ ]+)/).collect { it[1] }
-
+	def DESTDIR = (bo =~ /\s+DESTDIR\s+([^ ]+)/).collect { it[1] }
+	
 	def es = ""
 	for (e in enables) {
 		es += " --enable ${e}"
@@ -15,7 +16,12 @@ def parse(buildopts) {
 		ds += " --disable ${d}"
 	}
 
-	return [ debug: debug, enables: es, disables: ds ]
+	def dest = ""
+	for (d in DESTDIR) {
+		dest += "${d}"
+	}
+
+	return [ debug: debug, enables: es, disables: ds, destdir: dest ]
 }
 
 def call(branch, buildopts) {
@@ -25,9 +31,6 @@ def call(branch, buildopts) {
 	def jobs = sh script: 'nproc', returnStdout: true
 	jobs = jobs.trim()
 	println "Processors: ${jobs}"
-	if (jobs > 4) {
-		jobs--
-	}
 	println "Jobservers: ${jobs}"
 
 	def make
@@ -101,13 +104,15 @@ def call(branch, buildopts) {
 				local_cat_enables+=" MENUSELECT_CHANNELS MENUSELECT_CODECS MENUSELECT_FORMATS MENUSELECT_FUNCS"
 				local_cat_enables+=" MENUSELECT_PBX MENUSELECT_RES MENUSELECT_UTILS"
 
+				local_disables=""
 				if [ ${parameters.debug} = true ] ; then
 					local_enables="DONT_OPTIMIZE MALLOC_DEBUG BETTER_BACKTRACES TEST_FRAMEWORK DO_CRASH"
+					local_disables="COMPILE_DOUBLE"
 					local_cat_enables+=" MENUSELECT_TESTS"
 				fi
 
 				local_cat_disables=""
-				local_disables="res_mwi_external codec_opus codec_silk codec_g729a codec_siren7"
+				local_disables+=" res_mwi_external codec_opus codec_silk codec_g729a codec_siren7"
 				local_disables+=" codec_siren14 res_digium_phone chan_vpb"
 
 				es=""
@@ -160,19 +165,21 @@ def call(branch, buildopts) {
 		}
 
 		stage("install") {
+			def DESTDIR=""
+			if (parameters.destdir.length()) {
+				DESTDIR="DESTDIR=${parameters.destdir}"
+			}
 			sh """\
 				export WGET_EXTRA_ARGS="--quiet"
-				sudo ${make} install || sudo ${make} NOISY_BUILD=yes install 
-				sudo ${make} samples
-				git clean -fdx
+				sudo ${make}  ${DESTDIR} install || sudo ${make} NOISY_BUILD=yes ${DESTDIR} install 
+				sudo ${make}  ${DESTDIR} samples
+				git clean -fdx >/dev/null 2>&1
 				set +e
-				sudo chown -R jenkins:users /usr/lib/asterisk
-				sudo chown -R jenkins:users /var/lib/asterisk
-				sudo chown -R jenkins:users /var/spool/asterisk
-				sudo chown -R jenkins:users /var/log/asterisk
-				sudo chown -R jenkins:users /var/run/asterisk
-				sudo chown -R jenkins:users /etc/asterisk
-				sudo chown -R jenkins:users /usr/sbin/asterisk
+				sudo chown -R jenkins:users ${parameters.destdir}/var/lib/asterisk
+				sudo chown -R jenkins:users ${parameters.destdir}/var/spool/asterisk
+				sudo chown -R jenkins:users ${parameters.destdir}/var/log/asterisk
+				sudo chown -R jenkins:users ${parameters.destdir}/var/run/asterisk
+				sudo chown -R jenkins:users ${parameters.destdir}/etc/asterisk
 				sudo ldconfig
 				""".stripIndent()
 		}
