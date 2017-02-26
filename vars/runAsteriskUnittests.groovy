@@ -1,17 +1,16 @@
 def call() {
 	stage("unittests") {
 
-		env.PATH = "${env.PATH}:/usr/lib/ccache:/usr/local/bin:/usr/sbin:/usr/local/sbin"
-		
-		sh '''\
+		sudo """\
 			set +e
-			which asterisk || (echo "Asterisk isn't installed" ; exit 1) || exit 1
-			sudo killall -9 asterisk || echo "Asterisk not running (good)" 
-			sudo chown -R jenkins:users /etc/asterisk
-			# We create the link so we can use the pipeline writeFile function
-			# which only writes to the workspace.
+			if [ ! -x /usr/sbin/asterisk ] ; then
+				echo "Asterisk is not installed"
+				exit 1
+			fi
+			killall -9 asterisk 
+			chown -R jenkins:users /etc/asterisk
 			ln -sf /etc/asterisk etc-asterisk
-		'''.stripIndent()
+		"""
 
 		def configs = [
 			"extensions.conf",
@@ -24,7 +23,7 @@ def call() {
 		try {
 			for (f in configs) {
 				def path = "/etc/asterisk/${f}"
-				sh "[ -f ${path} ] && mv -f ${path} ${path}.backup"
+				shell "[ -f ${path} ] && mv -f ${path} ${path}.backup"
 			}
 
 			writeFile file: "etc-asterisk/manager.conf", text:'''\
@@ -49,43 +48,41 @@ def call() {
 
 			writeFile file: "etc-asterisk/extensions.conf", text: "[default]"
 
-			dir("asterisk") {
-				sh """\
-					[ -d test-reports ] && sudo rm -rf test-reports
-					mkdir test-reports
-					sudo asterisk -gn
-					sleep 3
-					sudo asterisk -rx 'core waitfullybooted'
-					sleep 1
-					sudo asterisk -rx 'test execute all'
-					sudo asterisk -rx 'test generate results xml ${pwd()}/test-reports/unit-test-results.xml'
-					if [ -f core* ] ; then
-						echo '*** Found a core file after running unit tests ***'
-						sudo gdb asterisk core* -ex 'bt full' -ex 'thread apply all bt' --batch
-						exit 1
-					fi
-				""".stripIndent()
-			}
+			sudo """\
+				[ -d test-reports ] && sudo rm -rf test-reports
+				mkdir test-reports
+				asterisk -gn
+				sleep 3
+				asterisk -rx "core waitfullybooted"
+				sleep 1
+				asterisk -rx "test execute all"
+				asterisk -rx "test generate results xml ${pwd()}/test-reports/unit-test-results.xml"
+				if [ -f core* ] ; then
+					echo "*** Found a core file after running unit tests ***"
+					gdb asterisk core* -ex "bt full" -ex "thread apply all bt" --batch
+					exit 1
+				fi
+				"""
 		} catch(e) {
 			error "Oops: ${e}"
 		} finally {
-			sh 'sudo killall -9 asterisk || echo "Asterisk not running (good)"' 
+			sudo 'killall -9 asterisk || :' 
 			for (f in configs) {
 				def path = "/etc/asterisk/${f}"
 				sh "[ -f ${path}.backup ] && mv -f ${path}.backup ${path}"
 			}
 		}
 
-		if (!fileExists("asterisk/test-reports/unit-test-results.xml")) {
+		if (!fileExists("test-reports/unit-test-results.xml")) {
 			error "No unit test results report was found"
 		}
-		sh '''
-		sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' asterisk/test-reports/*.xml
-		'''.stripIndent()
+		sudo '''\
+			sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' test-reports/*.xml
+		'''
 		
-		archiveArtifacts allowEmptyArchive: true, artifacts: 'asterisk/test-reports/*.xml', defaultExcludes: false, fingerprint: true
-		stash name: "unit-test-results", includes: "asterisk/test-reports/*.xml"
-		junit testResults: "asterisk/test-reports/*.xml",
+		archiveArtifacts allowEmptyArchive: true, artifacts: 'test-reports/*.xml', defaultExcludes: false, fingerprint: true
+		stash name: "unit-test-results", includes: "test-reports/*.xml"
+		junit testResults: "test-reports/*.xml",
 			healthScaleFactor: 1.0,
 			keepLongStdio: true
 	}

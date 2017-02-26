@@ -4,7 +4,6 @@ def parse(buildopts) {
 	def debug = (bo =~ /.*\s+-v\s+.*/).matches()
 	def enables = (bo =~ /\s+-e\s+([^ ]+)/).collect { it[1] }
 	def disables = (bo =~ /\s+-d\s+([^ ]+)/).collect { it[1] }
-	def DESTDIR = (bo =~ /\s+DESTDIR\s+([^ ]+)/).collect { it[1] }
 	
 	def es = ""
 	for (e in enables) {
@@ -16,15 +15,14 @@ def parse(buildopts) {
 		ds += " --disable ${d}"
 	}
 
-	def dest = ""
-	for (d in DESTDIR) {
-		dest += "${d}"
-	}
-
-	return [ debug: debug, enables: es, disables: ds, destdir: dest ]
+	return [ debug: debug, enables: es, disables: ds ]
 }
 
 def call(branch, buildopts) {
+	call(branch, buildopts, "")
+}
+
+def call(branch, buildopts, destdir) {
 
 	parameters = parse(buildopts)
 
@@ -45,15 +43,15 @@ def call(branch, buildopts) {
 	}
 	make = make.trim()
 
-	sh """\
-		sudo mkdir -p /srv/cache/externals /srv/cache/sounds || :
+	shell """\
+		mkdir -p /srv/cache/externals /srv/cache/sounds || :
 		sudo chown -R jenkins:users /srv/cache
 		sudo chown -R jenkins:users asterisk
-	""".stripIndent();
+	"""
 
 	dir("asterisk") {
 		stage("check-alembic") {
-			sh '''\
+			shell '''\
 				ALEMBIC=`which alembic 2>/dev/null || :`
 				if [ x"$ALEMBIC" = x ] ; then
 					echo "Alembic not installed"
@@ -81,11 +79,11 @@ def call(branch, buildopts) {
 					>&2 echo $out
 					exit 1
 				fi
-			'''.stripIndent()
+			'''
 		}
 
 		stage("distclean configure menuselect") {
-			sh """\
+			shell """\
 				common_config_args="--sysconfdir=/etc --with-pjproject-bundled"
 				common_config_args+=" --with-sounds-cache=/srv/cache/sounds --with-externals-cache=/srv/cache/externals"
 
@@ -111,7 +109,7 @@ def call(branch, buildopts) {
 					local_cat_enables+=" MENUSELECT_TESTS"
 				fi
 
-				local_cat_disables=""
+				local_cat_disables="MENUSELECT_CORE_SOUNDS MENUSELECT_MOH MENUSELECT_EXTRA_SOUNDS"
 				local_disables+=" res_mwi_external codec_opus codec_silk codec_g729a codec_siren7"
 				local_disables+=" codec_siren14 res_digium_phone chan_vpb"
 
@@ -147,41 +145,49 @@ def call(branch, buildopts) {
 				if [ ${parameters.disables.length()} -ne 0 ] ; then
 					menuselect/menuselect ${parameters.disables} menuselect.makeopts
 				fi
-			""".stripIndent()
+			"""
 
 			archiveArtifacts allowEmptyArchive: true, artifacts: 'config.log config_summary.log menuselect.makeopts menuselect.makedeps makeopts', defaultExcludes: false, fingerprint: true
 		}
 
 		stage("make") {
-			sh "${make} -j${jobs} || ${make} -j${jobs} NOISY_BUILD=yes"
+			shell "${make} -j${jobs} || ${make} -j${jobs} NOISY_BUILD=yes"
 		}
 
 		stage("validate-docs") {
-			sh """\
+			shell """\
 				if [ -f "doc/core-en_US.xml" ] ; then
 					${make} validate-docs || ${make} NOISY_BUILD=yes validate-docs
 				fi
-			""".stripIndent()
+			"""
 		}
 
 		stage("install") {
 			def DESTDIR=""
-			if (parameters.destdir.length()) {
-				DESTDIR="DESTDIR=${parameters.destdir}"
+			if (destdir && destdir.length()) {
+				sudo "rm -rf ${WORKSPACE}/${destdir} || : "
+				shell "mkdir ${WORKSPACE}/${destdir} || : "
+				DESTDIR="DESTDIR=${WORKSPACE}/${destdir}"
 			}
-			sh """\
+			sudo """\
 				export WGET_EXTRA_ARGS="--quiet"
-				sudo ${make}  ${DESTDIR} install || sudo ${make} NOISY_BUILD=yes ${DESTDIR} install 
-				sudo ${make}  ${DESTDIR} samples
-				git clean -fdx >/dev/null 2>&1
+				${make}  ${DESTDIR} install || sudo ${make} NOISY_BUILD=yes ${DESTDIR} install 
+				${make}  ${DESTDIR} samples
+				git clean -fdx >/dev/null 2>&1 || :
 				set +e
-				sudo chown -R jenkins:users ${parameters.destdir}/var/lib/asterisk
-				sudo chown -R jenkins:users ${parameters.destdir}/var/spool/asterisk
-				sudo chown -R jenkins:users ${parameters.destdir}/var/log/asterisk
-				sudo chown -R jenkins:users ${parameters.destdir}/var/run/asterisk
-				sudo chown -R jenkins:users ${parameters.destdir}/etc/asterisk
-				sudo ldconfig
-				""".stripIndent()
+				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/lib/asterisk
+				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/spool/asterisk
+				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/log/asterisk
+				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/run/asterisk
+				chown -R jenkins:users ${WORKSPACE}/${destdir}/etc/asterisk
+				ldconfig
+				"""
+			if (destdir && destdir.length()) {
+				sudo "cp -a contrib/ast-db-manage ${destdir}/"
+				dir("..") {
+					stashAsteriskFromInstall(destdir, "asterisk-install")
+				}
+			}
 		}
 	}
 }

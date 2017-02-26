@@ -112,7 +112,7 @@ dashboardView('Periodics') {
 		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
 			'id'('dashboard_portlet_44592')
 			'name'(' ')
-			'columnCount'('4')
+			'columnCount'('3')
 			'fillColumnFirst'('true')
 		}
 	}
@@ -129,9 +129,12 @@ for (br in globals.ast_branches) {
 		pipelineJob("check-ast-${br.key}-${arch}") {
 			definition {
 				cps {
-					script("checkAsterisk('${br.key}', '${arch}')")
+					script("timestamps() { checkAsterisk('${br.key}', '${arch}') }")
 					sandbox(true)
 				}
+			}
+			blockOn("check-ast-${br.key}-${arch}") {
+				blockLevel('NODE')
 			}
 			triggers {
 				gerritTrigger {
@@ -178,7 +181,7 @@ println "Creating testsuite check jobs"
 pipelineJob("check-testsuite") {
 	definition {
 		cps {
-			script("checkTestsuite()")
+			script("timestamps() { checkTestsuite() }")
 			sandbox(true)
 		}
 	}
@@ -219,9 +222,7 @@ pipelineJob("check-testsuite") {
 pipelineJob("check-testsuite-pep8") {
 	definition {
 		cps {
-			script("""
-					checkTestsuitePEP8()
-				""".stripIndent())
+			script("timestamps() { checkTestsuitePEP8() }")
 			sandbox(false)
 		}
 	}
@@ -266,9 +267,12 @@ for (br in globals.ast_branches) {
 		pipelineJob("gate-ast-${br.key}-${gt}") {
 			definition {
 				cps {
-					script("gateAsterisk('${br.key}', '${gt}')")
+					script("timestamps() { gateAsterisk('${br.key}', '${gt}') }")
 					sandbox(true)
 				}
+			}
+			blockOn("gate-ast-${br.key}-${gt}") {
+				blockLevel('NODE')
 			}
 			triggers {
 				gerritTrigger {
@@ -280,13 +284,6 @@ for (br in globals.ast_branches) {
 					gerritBuildUnstableVerifiedValue(0)
 					notificationLevel("NONE")
 					triggerOnEvents {
-						draftPublished()
-						changeRestored()
-						patchsetCreated {
-							excludeDrafts(false)
-							excludeNoCodeChange(true)
-							excludeTrivialRebase(false)
-						}
 						commentAdded {
 							verdictCategory("CodeReview")
 							commentAddedTriggerApprovalValue("2")
@@ -324,9 +321,12 @@ for (br in globals.ast_branches) {
 			triggers {
 				cron('H 1 * * *')
 			}
+			blockOn("periodic-ast-${br.key}-${pt}") {
+				blockLevel('NODE')
+			}
 			definition {
 				cps {
-					script("periodicAsterisk('${br.key}', '${pt}')")
+					script("timestamps() { periodicAsterisk('${br.key}', '${pt}') }")
 					sandbox(true)
 				}
 			}

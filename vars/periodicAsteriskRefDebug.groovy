@@ -1,3 +1,5 @@
+// Not ready yet.
+
 def call(branch, buildopts) {
 	timestamps {
 		node ("periodic && debug") {

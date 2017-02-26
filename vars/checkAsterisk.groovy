@@ -8,24 +8,22 @@ def call(branch, arch) {
 				"Query and Trigger Gerrit Patches" main menu.
 				'''.stripIndent()
 	}
-	timestamps {
-			def url = env.GERRIT_CHANGE_URL
-			
-			manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
-			manager.build.displayName += "-${env.GERRIT_CHANGE_NUMBER}"
-			
-			def changeid = "${env.GERRIT_BRANCH}-${env.GERRIT_CHANGE_NUMBER}"
-			checkoutAsteriskGerrit(changeid, env.GERRIT_REFSPEC, "asterisk")
+	manager.build.displayName = "${env.GERRIT_CHANGE_NUMBER}"
+	def node_family = ""
 
-		node("build && ${arch}-bit") {
-			def build_options = globals.test_options["unittst"].build_options ?: globals.default_build_options
-			sh "mkdir asterisk-install"
-			buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options} DESTDIR ${WORKSPACE}/asterisk-install")
-			sh "tar -czf asterisk-install.tar.gz asterisk-install"
-			stash includes: 'asterisk-install.tar.gz', name: 'asterisk-install'
-		node("check && ${arch}-bit") {
-			echo "DO NOTHING"
-//			runAsteriskUnittests()
-		}
+	node("build && ${arch}-bit") {
+		manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
+
+		checkoutAsteriskGerrit("asterisk")
+		def build_options = globals.test_options["unittst"].build_options ?: globals.default_build_options
+		buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}", "asterisk-install")
+		node_family = getNodeFamily("${NODE_NAME}")
+	}
+
+	node("check && ${arch}-bit && ${node_family}") {
+		manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
+		installAsteriskFromStash("asterisk-install", "/")
+
+		runAsteriskUnittests()
 	}
 }

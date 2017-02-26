@@ -1,26 +1,26 @@
 
-def call(branch, refspec, destination) {
-	stage("checkout") {
+def call(destination) {
+	stage('checkout-asterisk-gerrit') {
+		def changeid = "${env.GERRIT_BRANCH}-${env.GERRIT_CHANGE_NUMBER}"
+		def refspec = env.GERRIT_REFSPEC
 		def url = getGerritServerUrl(env.GERRIT_NAME)
-		
-		echo "URL: ${url}  Changeid: ${branch} Refspec: ${refspec} Project: ${env.GERRIT_PROJECT}"
-		
-		sh "sudo chown -R jenkins:users ${destination} || :"
-		checkout changelog: false, poll: false, scm: [
-			$class: 'GitSCM',
-			branches: [[name: branch]],
-			doGenerateSubmoduleConfigurations: false,
-			extensions: [
-				[$class: 'PruneStaleBranch'],
-				[$class: 'RelativeTargetDirectory', relativeTargetDir: destination],
-				[$class: 'CleanBeforeCheckout']
-			],
-			submoduleCfg: [],
-			userRemoteConfigs: [
-				[name: 'gerrit', refspec: "+${refspec}:refs/heads/${branch}", url: "${url}/${env.GERRIT_PROJECT}"]]
-		]
-		dir (destination) {
-			sh "git gc --prune=all || : "
+		def branch = env.GERRIT_BRANCH
+		lock('asterisk.gerrit') {
+			shell """\
+			if [ ! -d /srv/git/asterisk.gerrit ] ; then
+				git clone --bare "${url}/${env.GERRIT_PROJECT}" /srv/git/asterisk.gerrit
+			fi
+			sudo rm -rf ${destination} 
+			git clone /srv/git/asterisk.gerrit ${destination}
+			pushd ${destination}
+			git remote rename origin local
+			git remote add origin "${url}/${env.GERRIT_PROJECT}"
+			git checkout ${branch}
+			git push local ${branch}:${branch}
+			git fetch --tags --progress origin +${refspec}:refs/heads/${changeid} --prune
+			git checkout ${changeid}
+			popd
+			"""
 		}
 	}
 }
