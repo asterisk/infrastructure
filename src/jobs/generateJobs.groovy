@@ -112,7 +112,7 @@ dashboardView('Periodics') {
 		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
 			'id'('dashboard_portlet_44592')
 			'name'(' ')
-			'columnCount'('4')
+			'columnCount'('3')
 			'fillColumnFirst'('true')
 		}
 	}
@@ -320,13 +320,14 @@ for (br in globals.ast_branches) {
 println "Creating asterisk periodic jobs"
 for (br in globals.ast_branches) {
 	for (pt in br.value.periodic_types) {
-		pipelineJob("periodic-ast-${br.key}-${pt}") {
+		def pname = (pt.key == '<base>' ? "" : "-${pt.key}")
+		pipelineJob("periodic-ast-${br.key}${pname}") {
 			triggers {
 				cron('H 1 * * *')
 			}
 			definition {
 				cps {
-					script("periodicAsterisk('${br.key}', '${pt}')")
+					script("periodicAsterisk('${br.key}', '${pt.key}')")
 					sandbox(true)
 				}
 			}
