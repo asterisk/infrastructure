@@ -6,9 +6,6 @@ class globals {
 	def static default_build_options = "-e app_voicemail -e app_directory -e FILE_STORAGE"
 
 	def static test_options = [
-		'<base>': [
-			build_options: default_build_options
-		],
 		unittst: [
 			build_options: default_build_options
 		],
@@ -73,17 +70,15 @@ class globals {
 				"ari"
 			],
 			periodic_types: [
-				"<base>" : [
-					"unittst",
-					"pjsip",
-					"sip",
-					"iax2_local",
-					"ari",
-					"other",
-				],
-				"extmwi": null,
-				"realtime": null,
-				"doc": null,
+				"unittst",
+				"pjsip",
+				"sip",
+				"iax2_local",
+				"ari",
+				"extmwi",
+				"other",
+				"realtime",
+				"doc"
 			],
 			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
@@ -98,17 +93,15 @@ class globals {
 				"ari"
 			],
 			periodic_types: [
-				"<base>" : [
-					"unittst",
-					"pjsip",
-					"sip",
-					"iax2_local",
-					"ari",
-					"other",
-				],
-				"extmwi": null,
-				"realtime": null,
-				"doc": null,
+				"unittst",
+				"pjsip",
+				"sip",
+				"iax2_local",
+				"ari",
+				"extmwi",
+				"other",
+				"realtime",
+				"doc"
 			],
 			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
@@ -123,17 +116,14 @@ class globals {
 				"ari"
 			],
 			periodic_types: [
-				"<base>" : [
-					"unittst",
-					"pjsip",
-					"sip",
-					"iax2_local",
-					"ari",
-					"other",
-				],
-				"extmwi": null,
-				"realtime": null,
-				"doc": null,
+				"unittst",
+				"pjsip",
+				"sip",
+				"iax2_local",
+				"ari",
+				"extmwi",
+				"other",
+				"realtime"
 			],
 			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
