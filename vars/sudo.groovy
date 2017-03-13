@@ -5,5 +5,5 @@ def call(script)
 	def fn = "sudo-${number}.sh"
 	writeFile file: fn, text: scr
 	sh "sudo env bash ${fn}"
-	sh "sudo rm ${fn} || :" 
+	sh "sudo rm ${fn} >/dev/null 2>&1 || :" 
 }

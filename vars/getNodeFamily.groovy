@@ -6,7 +6,7 @@ def call(node_name) {
 		}
   		for (l in s.getAssignedLabels()) {
           if (l.getName().startsWith('family:')) {
-          	return l
+          	return "${l.getName()}"
           }
         }
 	}

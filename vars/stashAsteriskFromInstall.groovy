@@ -7,7 +7,7 @@ def call(dest, stashname)
 	}
 	echo "Stashing ${dest}/** to ${stashname}" 
 	sudo """\
-		rm ${stashname}.zip 2>/dev/null || :
+		rm ${stashname}.zip >/dev/null 2>&1 || :
 		if [ -d ${dest}/usr/lib64 ] ; then
 			mv ${dest}/usr/lib64 ${dest}/usr/lib
 		fi
@@ -22,5 +22,5 @@ def call(dest, stashname)
 		popd
 	"""
 	stash includes: "${stashname}.zip", name: stashname
-	sudo "rm ${stashname}.zip 2>/dev/null || :"
+	sudo "rm ${stashname}.zip >/dev/null 2>&1 || :"
 }

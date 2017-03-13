@@ -165,7 +165,7 @@ def call(branch, buildopts, destdir) {
 		stage("install") {
 			def DESTDIR=""
 			if (destdir && destdir.length()) {
-				sudo "rm -rf ${WORKSPACE}/${destdir} || : "
+				sudo "rm -rf ${WORKSPACE}/${destdir} >/dev/null 2>&1 || : "
 				shell "mkdir ${WORKSPACE}/${destdir} || : "
 				DESTDIR="DESTDIR=${WORKSPACE}/${destdir}"
 			}
@@ -183,7 +183,7 @@ def call(branch, buildopts, destdir) {
 				ldconfig
 				"""
 			if (destdir && destdir.length()) {
-				sudo "cp -a contrib/ast-db-manage ${destdir}/"
+				sudo "cp -a contrib/ast-db-manage ${WORKSPACE}/${destdir}/"
 				dir("..") {
 					stashAsteriskFromInstall(destdir, "asterisk-install")
 				}

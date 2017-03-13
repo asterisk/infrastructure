@@ -17,6 +17,7 @@ def call(branch, periodic_type) {
 		def build_options = globals.test_options[periodic_type].build_options ?: globals.default_build_options
 		buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}", "asterisk-install")
 		node_family = getNodeFamily("${NODE_NAME}")
+		echo "Will now run on family ${node_family}"
 	}
 
 	node ("periodic-${periodic_type} && 64-bit && ${node_family}") {
