@@ -94,7 +94,7 @@ install_codecs() {
 	# Lowercase the 'X'
 	ARCH=${ARCH,X}
 
-	TARGET_DIR=${CODEC}-${BRANCH}_current-${ARCH}_${BITS}
+	TARGET_DIR=${CODEC}-${BRANCH}.0_current-${ARCH}_${BITS}
 
 	# Any extra flags needed for wget?
 	wget http://downloads.digium.com/pub/telephony/${CODEC}/asterisk-${BRANCH}.0/${ARCH}-${BITS}/${TARGET_DIR}.tar.gz
