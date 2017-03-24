@@ -94,10 +94,14 @@ install_codecs() {
 	# Lowercase the 'X'
 	ARCH=${ARCH,X}
 
-	TARGET_DIR=${CODEC}-${BRANCH}.0_current-${ARCH}_${BITS}
+	BASE_URL=http://downloads.digium.com/pub/telephony/${CODEC}/asterisk-${BRANCH}.0/${ARCH}-${BITS}
+
+	# Determine the latest version from the manifest file
+	VERSION=$(xmllint --xpath 'string(/package/@version)' <(wget --quiet -O - ${BASE_URL}/manifest.xml))
+	TARGET_DIR=${CODEC}-${VERSION}-${ARCH}_${BITS}
 
 	# Any extra flags needed for wget?
-	wget http://downloads.digium.com/pub/telephony/${CODEC}/asterisk-${BRANCH}.0/${ARCH}-${BITS}/${TARGET_DIR}.tar.gz
+	wget ${BASE_URL}/${TARGET_DIR}.tar.gz
 	tar xvzf ${TARGET_DIR}.tar.gz
 	cp ${TARGET_DIR}/${CODEC}.so /usr/lib/asterisk/modules
 
