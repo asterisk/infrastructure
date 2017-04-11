@@ -11,7 +11,6 @@ def call(dest, stashname)
 		if [ -d ${dest}/usr/lib64 ] ; then
 			mv ${dest}/usr/lib64 ${dest}/usr/lib
 		fi
-		rm -rf ${dest}/usr/include || :
 		rm -rf ${dest}/usr/share || :
 		rm -rf ${dest}/var/lib/asterisk/sounds || :
 		rm -rf ${dest}/var/lib/asterisk/moh || : 
