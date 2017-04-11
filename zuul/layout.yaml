@@ -126,7 +126,7 @@ pipelines:
         precedence: low
         require:
             approval:
-                -       
+                -
                     verified: [1, 2]
         trigger:
             zuul:
@@ -192,8 +192,6 @@ projects:
             - name: 'merge-check'
             - name: 'asterisk-jobs'
             - name: 'periodic-asterisk'
-              branch: '11'
-            - name: 'periodic-asterisk'
               branch: '13'
             - name: 'periodic-asterisk'
               branch: '14'
@@ -206,9 +204,6 @@ projects:
             - name: 'periodic-realtime-asterisk'
               branch: 'master'
             - name: 'periodic-documentation-asterisk'
-              branch: '11'
-            - name: 'periodic-documentation-asterisk'
               branch: '13'
             - name: 'periodic-documentation-asterisk'
               branch: '14'
-
