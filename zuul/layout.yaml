@@ -1,29 +1,5 @@
 pipelines:
     -
-        name: check
-        description: Newly uploaded patchsets enter this pipeline to get an initial +1/-1 from Jenkins
-        success-message: Build succeeded (check pipeline).
-        failure-message: Build failed (check pipeline). Please check the logs referenced below. For more information on how to proceed, please see https://wiki.asterisk.org/wiki/display/AST/Continuous+Integration
-        manager: IndependentPipelineManager
-        source: gerrit
-        precedence: normal
-        require:
-            open: True
-            current-patchset: True
-        trigger:
-            gerrit:
-                - event: patchset-created
-                - event: change-restored
-                - event: draft-published
-                - event: comment-added
-                  comment: (?i)^(Patch Set [0-9]+:)?( [\w\\+-]*)*(\n\n)?\s*(recheck|reverify)
-        success:
-            gerrit:
-                verified: 1
-        failure:
-            gerrit:
-                verified: -1
-    -
         name: gate
         description: Changes that have been approved by mergers are enqueued in this pipeline.
         success-message: Build succeeded (gate pipeline).
