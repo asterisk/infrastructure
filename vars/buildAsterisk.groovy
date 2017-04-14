@@ -108,36 +108,34 @@ def call(branch, buildopts, destdir) {
 					local_disables="COMPILE_DOUBLE"
 					local_cat_enables+=" MENUSELECT_TESTS"
 				fi
+				local_enables+=" CORE-SOUNDS-EN-GSM MOH-OPSOUND-GSM EXTRA-SOUNDS-EN-GSM"
 
-				local_cat_disables="MENUSELECT_CORE_SOUNDS MENUSELECT_MOH MENUSELECT_EXTRA_SOUNDS"
+				local_cat_disables=" MENUSELECT_CORE_SOUNDS MENUSELECT_MOH MENUSELECT_EXTRA_SOUNDS"
 				local_disables+=" res_mwi_external codec_opus codec_silk codec_g729a codec_siren7"
 				local_disables+=" codec_siren14 res_digium_phone chan_vpb"
 
-				es=""
+				locals=""
 				for ecat in \$local_cat_enables ; do
-					es+=" --enable-category \${ecat}"
+					locals+=" --enable-category \${ecat}"
+				done
+
+				for dcat in \${local_cat_disables} ; do
+					locals+=" --disable-category \${dcat}"
 				done
 
 				for e in \${local_enables} ; do
-					es+=" --enable \${e}"
+					locals+=" --enable \${e}"
 				done
 			
-				if [ \${#es} -ne 0 ] ; then
-					menuselect/menuselect \${es} menuselect.makeopts
-				fi
-
-				ds=""
-				for dcat in \${local_cat_disables} ; do
-					ds+=" --disable-category \${dcat}"
-				done
 				for d in \${local_disables} ; do
-					ds+=" --disable \${d}"
+					locals+=" --disable \${d}"
 				done
 
-				if [ \${#ds} -ne 0 ] ; then
-					menuselect/menuselect \${ds} menuselect.makeopts
+				if [ \${#locals} -ne 0 ] ; then
+					menuselect/menuselect \${locals} menuselect.makeopts
 				fi
-	
+
+
 				if [ ${parameters.enables.length()} -ne 0 ] ; then
 					menuselect/menuselect ${parameters.enables} menuselect.makeopts
 				fi
@@ -167,23 +165,25 @@ def call(branch, buildopts, destdir) {
 			if (destdir && destdir.length()) {
 				sudo "rm -rf ${WORKSPACE}/${destdir} >/dev/null 2>&1 || : "
 				shell "mkdir ${WORKSPACE}/${destdir} || : "
-				DESTDIR="DESTDIR=${WORKSPACE}/${destdir}"
+				destdir="${WORKSPACE}/${destdir}"
+				DESTDIR="DESTDIR=${destdir}"
 			}
 			sudo """\
 				export WGET_EXTRA_ARGS="--quiet"
+				${make}  ${DESTDIR} uninstall-all || : 
 				${make}  ${DESTDIR} install || sudo ${make} NOISY_BUILD=yes ${DESTDIR} install 
 				${make}  ${DESTDIR} samples
 				git clean -fdx >/dev/null 2>&1 || :
 				set +e
-				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/lib/asterisk
-				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/spool/asterisk
-				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/log/asterisk
-				chown -R jenkins:users ${WORKSPACE}/${destdir}/var/run/asterisk
-				chown -R jenkins:users ${WORKSPACE}/${destdir}/etc/asterisk
+				chown -R jenkins:users ${destdir}/var/lib/asterisk
+				chown -R jenkins:users ${destdir}/var/spool/asterisk
+				chown -R jenkins:users ${destdir}/var/log/asterisk
+				chown -R jenkins:users ${destdir}/var/run/asterisk
+				chown -R jenkins:users ${destdir}/etc/asterisk
 				ldconfig
 				"""
 			if (destdir && destdir.length()) {
-				sudo "cp -a contrib/ast-db-manage ${WORKSPACE}/${destdir}/"
+				sudo "cp -a contrib/ast-db-manage ${destdir}/"
 				dir("..") {
 					stashAsteriskFromInstall(destdir, "asterisk-install")
 				}

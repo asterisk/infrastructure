@@ -51,7 +51,6 @@ class globals {
 	]
 	
 	def static ast_branches = [
-
 		'13': [
 			build_options: "${basic_build_options} -e codec_silk",
 			gate_types: [

@@ -17,17 +17,23 @@ dashboardView(' Summary') {
 		lastDuration()
 		progressBar()
 	}
-	configure { view ->
-		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
-			'id'('dashboard_portlet_44597')
-			'name'(' ')
-			'columnCount'('4')
-			'fillColumnFirst'('true')
-		}
-	}
 	topPortlets {
+		jobsPortlet {
+			name('Jobs')
+			columnCount(4)
+			fillColumnFirst(true)
+		}
 		jenkinsJobsList {
 			displayName('Detail')
+		}
+	}
+	bottomPortlets {
+		buildStatistics {
+			displayName('Build Stats')
+		}
+		latestBuilds {
+			name('Latest Builds')
+			numBuilds(10)
 		}
 	}
 }
@@ -47,17 +53,23 @@ dashboardView('Checks') {
 		lastDuration()
 		progressBar()
 	}
-	configure { view ->
-		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
-			'id'('dashboard_portlet_44590')
-			'name'(' ')
-			'columnCount'('4')
-			'fillColumnFirst'('true')
-		}
-	}
 	topPortlets {
+		jobsPortlet {
+			name('Jobs')
+			columnCount(4)
+			fillColumnFirst(true)
+		}
 		jenkinsJobsList {
 			displayName('Detail')
+		}
+	}
+	bottomPortlets {
+		buildStatistics {
+			displayName('Build Stats')
+		}
+		latestBuilds {
+			name('Latest Builds')
+			numBuilds(10)
 		}
 	}
 }
@@ -77,17 +89,23 @@ dashboardView('Gates') {
 		lastDuration()
 		progressBar()
 	}
-	configure { view ->
-		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
-			'id'('dashboard_portlet_44591')
-			'name'(' ')
-			'columnCount'('4')
-			'fillColumnFirst'('true')
-		}
-	}
 	topPortlets {
+		jobsPortlet {
+			name('Jobs')
+			columnCount(4)
+			fillColumnFirst(true)
+		}
 		jenkinsJobsList {
 			displayName('Detail')
+		}
+	}
+	bottomPortlets {
+		buildStatistics {
+			displayName('Build Stats')
+		}
+		latestBuilds {
+			name('Latest Builds')
+			numBuilds(10)
 		}
 	}
 }
@@ -108,17 +126,23 @@ dashboardView('Periodics') {
 		progressBar()
 		buildButton()
 	}
-	configure { view ->
-		view / topPortlets << "hudson.plugins.view.dashboard.core.JobsPortlet" {
-			'id'('dashboard_portlet_44592')
-			'name'(' ')
-			'columnCount'('3')
-			'fillColumnFirst'('true')
-		}
-	}
 	topPortlets {
+		jobsPortlet {
+			name('Jobs')
+			columnCount(3)
+			fillColumnFirst(true)
+		}
 		jenkinsJobsList {
 			displayName('Detail')
+		}
+	}
+	bottomPortlets {
+		buildStatistics {
+			displayName('Build Stats')
+		}
+		latestBuilds {
+			name('Latest Builds')
+			numBuilds(10)
 		}
 	}
 }
@@ -129,24 +153,27 @@ for (br in globals.ast_branches) {
 		pipelineJob("check-ast-${br.key}-${arch}") {
 			definition {
 				cps {
-					script("timestamps() { checkAsterisk('${br.key}', '${arch}') }")
+					script("""\
+						manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
+						timestamps() {
+							node ('job:check && bits:${arch}') { 
+								checkAsterisk('${br.key}', '${arch}')
+							}
+						}""")
 					sandbox(true)
 				}
-			}
-			blockOn("check-ast-${br.key}-${arch}") {
-				blockLevel('NODE')
 			}
 			triggers {
 				gerritTrigger {
 					serverName(br.value.gerrit_trigger)
-					silentMode(true)
-					silentStartMode(true)
-					gerritBuildFailedVerifiedValue(0)
-					gerritBuildSuccessfulVerifiedValue(0)
-					gerritBuildUnstableVerifiedValue(0)
+					silentMode(false)
+					silentStartMode(false)
+					gerritBuildFailedVerifiedValue(-1)
+					gerritBuildSuccessfulVerifiedValue(1)
+					gerritBuildUnstableVerifiedValue(-1)
 					notificationLevel("NONE")
 					triggerOnEvents {
-						commentAddedContains { commentAddedCommentContains('^(recheck|reverify)$') }
+						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
 						changeRestored()
 						patchsetCreated {
 							excludeDrafts(false)
@@ -156,8 +183,8 @@ for (br in globals.ast_branches) {
 					}
 					gerritProjects {
 						gerritProject {
-							compareType("PLAIN")
-							pattern("asterisk")
+							compareType("REG_EXP")
+							pattern('^asterisk$')
 							branches {
 								branch {
 									compareType("PLAIN")
@@ -193,7 +220,7 @@ pipelineJob("check-testsuite") {
 			gerritBuildFailedVerifiedValue(-1)
 			gerritBuildSuccessfulVerifiedValue(1)
 			gerritBuildUnstableVerifiedValue(-1)
-			notificationLevel("NONE")
+			notificationLevel("OWNER_REVIEWERS")
 			triggerOnEvents {
 				changeRestored()
 				patchsetCreated {
@@ -201,7 +228,7 @@ pipelineJob("check-testsuite") {
 					excludeTrivialRebase(false)
 					excludeNoCodeChange(true)
 				}
-				commentAddedContains { commentAddedCommentContains('^(recheck|reverify)$') }
+				commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
 			}
 			gerritProjects {
 				gerritProject {
@@ -242,7 +269,7 @@ pipelineJob("check-testsuite-pep8") {
 					excludeTrivialRebase(false)
 					excludeNoCodeChange(true)
 				}
-				commentAddedContains { commentAddedCommentContains('^(recheck|reverify)$') }
+				commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
 			}
 			gerritProjects {
 				gerritProject {
@@ -279,21 +306,21 @@ for (br in globals.ast_branches) {
 					serverName(br.value.gerrit_trigger)
 					silentMode(true)
 					silentStartMode(true)
-					gerritBuildFailedVerifiedValue(0)
-					gerritBuildSuccessfulVerifiedValue(0)
-					gerritBuildUnstableVerifiedValue(0)
-					notificationLevel("NONE")
+					gerritBuildFailedVerifiedValue(-1)
+					gerritBuildSuccessfulVerifiedValue(2)
+					gerritBuildUnstableVerifiedValue(-1)
+					notificationLevel("OWNER_REVIEWERS")
 					triggerOnEvents {
 						commentAdded {
 							verdictCategory("CodeReview")
 							commentAddedTriggerApprovalValue("2")
 						}
-						commentAddedContains { commentAddedCommentContains('^regate$') }
+						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..regate$') }
 					}
 					gerritProjects {
 						gerritProject {
-							compareType("PLAIN")
-							pattern("asterisk")
+							compareType("REG_EXP")
+							pattern('^asterisk$')
 							branches {
 								branch {
 									compareType("PLAIN")

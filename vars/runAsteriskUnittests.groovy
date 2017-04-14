@@ -79,7 +79,7 @@ def call() {
 		sudo '''\
 			sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' test-reports/*.xml
 		'''
-		
+		sudo "rm -rf /var/spool/asterisk/voicemail/*"
 		archiveArtifacts allowEmptyArchive: true, artifacts: 'test-reports/*.xml', defaultExcludes: false, fingerprint: true
 		stash name: "unit-test-results", includes: "test-reports/*.xml"
 		junit testResults: "test-reports/*.xml",
