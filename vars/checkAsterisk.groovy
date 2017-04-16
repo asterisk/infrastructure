@@ -24,7 +24,7 @@ def call(branch, arch) {
 		gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
 			verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
 			verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
-		 error e
+		error e
 	}
 }
 
