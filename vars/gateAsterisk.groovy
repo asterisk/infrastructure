@@ -12,14 +12,14 @@ def call(branch, gate_type) {
 	manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
 			
 	try {
-		checkoutAsteriskGerrit("asterisk")
+		checkoutGerritChange("asterisk")
 		def build_options = globals.test_options[gate_type].build_options ?: globals.default_build_options
 		buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}", "")
 
 		if (gate_type == "unittst") {
 			runAsteriskUnittests()
 		} else {
-			checkoutTestsuiteMirror("master", "testsuite")
+			checkoutProjectMirror("testsuite", "master", "testsuite")
 			runTestsuite(globals.test_options[gate_type])
 		}
 		gerritverificationpublisher verifyStatusValue: 2, verifyStatusCategory: 'Passed',

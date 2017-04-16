@@ -1,7 +1,7 @@
 
 def call(branch, destination) {
 	stage('checkout-asterisk-mirror') {
-		lock('asterisk.gerrit') {
+		lock('asterisk.mirror') {
 			shell """\
 				if [ ! -d /srv/git/asterisk.mirror ] ; then
 					git clone --bare git://git.asterisk.org/asterisk/asterisk.git /srv/git/asterisk.mirror

@@ -36,22 +36,22 @@ def call(test) {
 			}
 				
 			try {
-				sh """\
+				shell """\
 					sudo chown -R jenkins:users . 
 					[ -d /tmp/asterisk-testsuite ] && sudo chown -R jenkins:users /tmp/asterisk-testsuite
 					sudo ./runtests.py ${command_line}
-				""".stripIndent()
+				"""
 			} catch(e) {
-				println "Error running runtests.py ${command_line}"
-				println e.toString()
+				echo "Error running runtests.py ${command_line}"
+				echo e.toString()
 			} finally {
 				try {
-					sh '''\
+					shell '''\
 						set +e
 						sudo killall -9 asterisk
 						sudo pkill -9 -f runtests.py
 						sudo pkill -9 -f test_runner.py
-					'''.stripIndent()
+					'''
 				} catch (e) {
 				}
 			}
@@ -64,10 +64,10 @@ def call(test) {
 			junit testResults: "asterisk-test-suite-report.xml",
 				healthScaleFactor: 1.0,
 				keepLongStdio: true
-			sh '''\
-				sudo ./cleanup-test-remnants.sh
-				sudo rm -rf /tmp/asterisk-testsuite
-			'''.stripIndent()
+			sudo '''\
+				./cleanup-test-remnants.sh
+				rm -rf /tmp/asterisk-testsuite
+			'''
 		}
 	}
 }

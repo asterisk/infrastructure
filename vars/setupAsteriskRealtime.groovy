@@ -1,8 +1,6 @@
 def call(branch, user, host, name, dsn) {
 
 	stage("realtime-setup") {
-		sh "psql --username=${user} --host=${host} --db=${name} --command='DROP OWNED BY ${user} CASCADE'"
-
 		dir("testsuite") {
 			writeFile file: "test-config.yaml", text: """\
 			global-settings:
@@ -112,7 +110,10 @@ def call(branch, user, host, name, dsn) {
 		""".stripIndent()
 
 		echo "Creating database tables"
-		sh "alembic -c config.ini upgrade head"
-		sh "rm -rf config.ini"
+		shell """\
+			psql --username=${user} --host=${host} --db=${name} --command='DROP OWNED BY ${user} CASCADE'
+			alembic -c config.ini upgrade head
+			rm -rf config.ini
+		"""
 	}
 }

@@ -15,7 +15,7 @@ def call(branch) {
 		]
 	}
 
-	checkoutAsteriskMirror(branch, "astxml2wiki/asterisk")
+	checkoutProjectMirror("asterisk", branch, "astxml2wiki/asterisk")
 
 	stage("publish-to-wiki") {
 		dir("astxml2wiki/asterisk") { sh "../publish.sh ${branch}" }

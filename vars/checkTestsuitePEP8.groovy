@@ -1,5 +1,14 @@
 def call() {
-	checkoutTestsuiteMirror("master", "testsuite")
+	if (!env.GERRIT_REFSPEC || !env.GERRIT_REFSPEC.length()) {
+		error '''
+			This job can't be triggered manually as it relies on environment variables
+			provided by Gerrit.  You may be able to manually trigger it from the
+			"Query and Trigger Gerrit Patches" main menu.
+			'''.stripIndent()
+	}
+	manager.build.displayName = "${env.GERRIT_CHANGE_NUMBER}"
+	manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
+	checkoutGerritChange("testsuite")
 
 	stage("run-testsuite-pep8") {
 		try {

@@ -161,33 +161,19 @@ def call(branch, buildopts, destdir) {
 		}
 
 		stage("install") {
-			def DESTDIR=""
-			if (destdir && destdir.length()) {
-				sudo "rm -rf ${WORKSPACE}/${destdir} >/dev/null 2>&1 || : "
-				shell "mkdir ${WORKSPACE}/${destdir} || : "
-				destdir="${WORKSPACE}/${destdir}"
-				DESTDIR="DESTDIR=${destdir}"
-			}
 			sudo """\
-				export WGET_EXTRA_ARGS="--quiet"
-				${make}  ${DESTDIR} uninstall-all || : 
-				${make}  ${DESTDIR} install || sudo ${make} NOISY_BUILD=yes ${DESTDIR} install 
-				${make}  ${DESTDIR} samples
-				git clean -fdx >/dev/null 2>&1 || :
+				${make} uninstall-all
+				${make} install || ${make} NOISY_BUILD=yes install 
+				${make} samples
 				set +e
-				chown -R jenkins:users ${destdir}/var/lib/asterisk
-				chown -R jenkins:users ${destdir}/var/spool/asterisk
-				chown -R jenkins:users ${destdir}/var/log/asterisk
-				chown -R jenkins:users ${destdir}/var/run/asterisk
-				chown -R jenkins:users ${destdir}/etc/asterisk
+				git clean -fdx >/dev/null 2>&1
+				chown -R jenkins:users /var/lib/asterisk
+				chown -R jenkins:users /var/spool/asterisk
+				chown -R jenkins:users /var/log/asterisk
+				chown -R jenkins:users /var/run/asterisk
+				chown -R jenkins:users /etc/asterisk
 				ldconfig
 				"""
-			if (destdir && destdir.length()) {
-				sudo "cp -a contrib/ast-db-manage ${destdir}/"
-				dir("..") {
-					stashAsteriskFromInstall(destdir, "asterisk-install")
-				}
-			}
 		}
 	}
 }

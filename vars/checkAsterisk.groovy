@@ -12,7 +12,7 @@ def call(branch, arch) {
 	manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
 
 	try {
-		checkoutAsteriskGerrit("asterisk")
+		checkoutGerritChange("asterisk")
 		def build_options = globals.test_options["unittst"].build_options ?: globals.default_build_options
 		buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}", "")
 		runAsteriskUnittests()
