@@ -92,7 +92,7 @@ dashboardView('Gates') {
 	topPortlets {
 		jobsPortlet {
 			name('Jobs')
-			columnCount(4)
+			columnCount(3)
 			fillColumnFirst(true)
 		}
 		jenkinsJobsList {
