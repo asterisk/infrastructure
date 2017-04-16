@@ -171,7 +171,7 @@ for (br in globals.ast_branches) {
 					gerritBuildFailedVerifiedValue(-1)
 					gerritBuildSuccessfulVerifiedValue(1)
 					gerritBuildUnstableVerifiedValue(-1)
-					notificationLevel("NONE")
+					notificationLevel("OWNER_REVIEWERS")
 					triggerOnEvents {
 						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
 						changeRestored()
@@ -208,15 +208,21 @@ println "Creating testsuite check jobs"
 pipelineJob("check-testsuite") {
 	definition {
 		cps {
-			script("timestamps() { checkTestsuite() }")
+			script("""\
+				manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
+				timestamps() {
+					node ('job:check') { 
+						checkTestsuite()
+					}
+				}""")
 			sandbox(true)
 		}
 	}
 	triggers {
 		gerritTrigger {
 			serverName(globals.testsuite.gerrit_trigger)
-			silentMode(true)
-			silentStartMode(true)
+			silentMode(false)
+			silentStartMode(false)
 			gerritBuildFailedVerifiedValue(-1)
 			gerritBuildSuccessfulVerifiedValue(1)
 			gerritBuildUnstableVerifiedValue(-1)
@@ -232,8 +238,8 @@ pipelineJob("check-testsuite") {
 			}
 			gerritProjects {
 				gerritProject {
-					compareType("PLAIN")
-					pattern("testsuite")
+					compareType("REG_EXP")
+					pattern('^testsuite$')
 					branches {
 						branch {
 							compareType("PLAIN")
@@ -249,15 +255,21 @@ pipelineJob("check-testsuite") {
 pipelineJob("check-testsuite-pep8") {
 	definition {
 		cps {
-			script("timestamps() { checkTestsuitePEP8() }")
+			script("""\
+				manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
+				timestamps() {
+					node ('job:check') { 
+						checkTestsuitePEP8()
+					}
+				}""")
 			sandbox(false)
 		}
 	}
 	triggers {
 		gerritTrigger {
 			serverName(globals.testsuite.gerrit_trigger)
-			silentMode(true)
-			silentStartMode(true)
+			silentMode(false)
+			silentStartMode(false)
 			gerritBuildFailedVerifiedValue(-1)
 			gerritBuildSuccessfulVerifiedValue(1)
 			gerritBuildUnstableVerifiedValue(-1)
@@ -273,8 +285,8 @@ pipelineJob("check-testsuite-pep8") {
 			}
 			gerritProjects {
 				gerritProject {
-					compareType("PLAIN")
-					pattern("testsuite")
+					compareType("REG_EXP")
+					pattern('^testsuite$')
 					branches {
 						branch {
 							compareType("PLAIN")
@@ -294,18 +306,21 @@ for (br in globals.ast_branches) {
 		pipelineJob("gate-ast-${br.key}-${gt}") {
 			definition {
 				cps {
-					script("timestamps() { gateAsterisk('${br.key}', '${gt}') }")
+					script("""\
+						manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
+						timestamps() {
+							node ('job:gate') { 
+								gateAsterisk('${br.key}', '${gt}')
+							}
+						}""")
 					sandbox(true)
 				}
-			}
-			blockOn("gate-ast-${br.key}-${gt}") {
-				blockLevel('NODE')
 			}
 			triggers {
 				gerritTrigger {
 					serverName(br.value.gerrit_trigger)
-					silentMode(true)
-					silentStartMode(true)
+					silentMode(false)
+					silentStartMode(false)
 					gerritBuildFailedVerifiedValue(-1)
 					gerritBuildSuccessfulVerifiedValue(2)
 					gerritBuildUnstableVerifiedValue(-1)
@@ -348,12 +363,14 @@ for (br in globals.ast_branches) {
 			triggers {
 				cron('H 1 * * *')
 			}
-			blockOn("periodic-ast-${br.key}-${pt}") {
-				blockLevel('NODE')
-			}
 			definition {
 				cps {
-					script("timestamps() { periodicAsterisk('${br.key}', '${pt}') }")
+					script("""\
+						timestamps() {
+							node ('job:periodic-${pt} || job:periodic') { 
+								periodicAsterisk('${br.key}', '${pt}')
+							}
+						}""")
 					sandbox(true)
 				}
 			}
