@@ -30,7 +30,7 @@ def call(branch, gate_type) {
 		gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
 			verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
 			verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
-		error e
+		error e.toString()
 	}
 }
 
