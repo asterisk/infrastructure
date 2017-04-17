@@ -70,7 +70,7 @@ def call(branch, user, host, name, dsn) {
 		}				
 		writeFile file: 'config.ini', text: """\
 		[alembic]
-		script_location = asterisk-install/ast-db-manage/config
+		script_location = asterisk/contrib/ast-db-manage/config
 		sqlalchemy.url = postgresql://${user}@${host}/${name}
 		
 		[loggers]
