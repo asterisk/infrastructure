@@ -5,7 +5,7 @@ def call(destination) {
 		def refspec = env.GERRIT_REFSPEC
 		def url = getGerritServerUrl(env.GERRIT_NAME)
 		def branch = env.GERRIT_BRANCH
-		lock("${env.GERRIT_PROJECT}.gerrit") {
+		lock("${NODE_NAME}.${env.GERRIT_PROJECT}.gerrit") {
 			shell """\
 			if [ ! -d /srv/git/${env.GERRIT_PROJECT}.gerrit ] ; then
 				git clone --bare "${url}/${env.GERRIT_PROJECT}" /srv/git/${env.GERRIT_PROJECT}.gerrit

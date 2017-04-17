@@ -1,6 +1,6 @@
 def call(project, branch, destination) {
 	stage("checkout-${project}") {
-		lock("${project}.mirror") {
+		lock("${NODE_NAME}.${project}.mirror") {
 			shell """\
 				if [ ! -d /srv/git/${project}.mirror ] ; then
 					git clone --bare git://git.asterisk.org/asterisk/${project}.git /srv/git/${project}.mirror
