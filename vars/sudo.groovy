@@ -1,13 +1,23 @@
 import hudson.FilePath
 import java.io.*
 
-@NonCPS
 def call(script)
+{
+	writeFile encoding: 'utf-8', file: "${WORKSPACE}/sudo.sh", text: """\
+	#!/bin/env bash
+	set -ex
+	${script.stripIndent()}
+	"""
+	sh "set +x ; echo SUDO... ; chmod a+x ${WORKSPACE}/sudo.sh ; sudo ${WORKSPACE}/sudo.sh ; echo ...END-SUDO"
+}
+
+@NonCPS
+def callTest(script)
 {
 	def scr = "echo 'Executing sudo on ${NODE_NAME}'\nset -ex\n" + script.stripIndent()
 
 	def node = Jenkins.getInstance().getComputer(NODE_NAME).getNode()
-	def fp = new FilePath(node.getChannel(), pwd());
+	def fp = new File(pwd());
 	def l = node.createLauncher(manager.listener)
 	l.decorateFor(node)
 	

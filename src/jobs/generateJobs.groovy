@@ -366,9 +366,11 @@ for (br in globals.ast_branches) {
 			definition {
 				cps {
 					script("""\
+						timestamps() {
 							node ('job:periodic-${pt} || job:periodic') { 
 								periodicAsterisk('${br.key}', '${pt}')
 							}
+						}
 						""")
 					sandbox(true)
 				}
