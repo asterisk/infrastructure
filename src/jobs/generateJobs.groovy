@@ -156,7 +156,7 @@ for (br in globals.ast_branches) {
 					script("""\
 						manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
 						timestamps() {
-							node ('job:check && bits:${arch}') { 
+							node ('job:check && bits:${arch}') {
 								checkAsterisk('${br.key}', '${arch}')
 							}
 						}""")
@@ -211,7 +211,7 @@ pipelineJob("check-testsuite") {
 			script("""\
 				manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
 				timestamps() {
-					node ('job:check') { 
+					node ('job:check') {
 						checkTestsuite()
 					}
 				}""")
@@ -258,7 +258,7 @@ pipelineJob("check-testsuite-pep8") {
 			script("""\
 				manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
 				timestamps() {
-					node ('job:check') { 
+					node ('job:check') {
 						checkTestsuitePEP8()
 					}
 				}""")
@@ -309,7 +309,7 @@ for (br in globals.ast_branches) {
 					script("""\
 						manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
 						timestamps() {
-							node ('job:gate') { 
+							node ('job:gate') {
 								gateAsterisk('${br.key}', '${gt}')
 							}
 						}""")
@@ -328,8 +328,9 @@ for (br in globals.ast_branches) {
 					triggerOnEvents {
 						commentAdded {
 							verdictCategory("CodeReview")
-							commentAddedTriggerApprovalValue("2")
+							commentAddedTriggerApprovalValue("+2")
 						}
+						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+: Code-Review[+]2$') }
 						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..regate$') }
 					}
 					gerritProjects {
@@ -351,7 +352,7 @@ for (br in globals.ast_branches) {
 					}
 				}
 			}
-	
+
 		}
 	}
 }
@@ -367,7 +368,7 @@ for (br in globals.ast_branches) {
 				cps {
 					script("""\
 						timestamps() {
-							node ('job:periodic-${pt} || job:periodic') { 
+							node ('job:periodic-${pt} || job:periodic') {
 								periodicAsterisk('${br.key}', '${pt}')
 							}
 						}
