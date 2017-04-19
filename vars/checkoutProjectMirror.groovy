@@ -5,7 +5,7 @@ def call(project, branch, destination) {
 				if [ ! -d /srv/git/${project}.mirror ] ; then
 					git clone --bare git://git.asterisk.org/asterisk/${project}.git /srv/git/${project}.mirror
 				fi
-				rm -rf ${destination}
+				sudo rm -rf ${destination}
 				git clone /srv/git/${project}.mirror ${destination}
 				pushd ${destination}
 				git remote rename origin local

@@ -3,7 +3,7 @@ import globals
 def call(branch, arch) {
 	if (!env.GERRIT_REFSPEC || !env.GERRIT_REFSPEC.length()) {
 		error '''
-			This job can't be triggered manually as it relies on environment variables
+			This job can not be triggered manually as it relies on environment variables
 			provided by Gerrit.  You may be able to manually trigger it from the
 			"Query and Trigger Gerrit Patches" main menu.
 			'''.stripIndent()
@@ -21,10 +21,15 @@ def call(branch, arch) {
 			verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
 				
 	} catch (e) {
-		gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
-			verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
-			verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
-		error e.toString()
+		if (e instanceof hudson.AbortException) {
+			println "Build aborted"
+			echo e.getStackTrace()
+		} else { 
+			gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
+				verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
+				verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
+			error e.getStackTrace()
+		}
 	}
 }
 
