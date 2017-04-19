@@ -36,27 +36,27 @@ def call(test) {
 			}
 				
 			try {
-				shell """\
-					sudo chown -R jenkins:users . 
-					[ -d /tmp/asterisk-testsuite ] && sudo chown -R jenkins:users /tmp/asterisk-testsuite
-					sudo ./runtests.py ${command_line}
+				sudo """\
+					chown -R jenkins:users . 
+					[ -d /tmp/asterisk-testsuite ] && rm -rf /tmp/asterisk-testsuite
+					./runtests.py ${command_line}
 				"""
 			} catch(e) {
 				echo "Error running runtests.py ${command_line}"
 				echo e.toString()
 			} finally {
 				try {
-					shell '''\
+					sudo '''\
 						set +e
-						sudo killall -9 asterisk
-						sudo pkill -9 -f runtests.py
-						sudo pkill -9 -f test_runner.py
+						killall -9 asterisk
+						pkill -9 -f runtests.py
+						pkill -9 -f test_runner.py
 					'''
 				} catch (e) {
 				}
 			}
 
-			sh '''sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' asterisk-test-suite-report.xml'''
+			sudo '''sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' asterisk-test-suite-report.xml'''
 
 			fingerprint "asterisk-test-suite-report.xml"
 			archiveArtifacts allowEmptyArchive: true, artifacts: 'asterisk-test-suite-report.xml logs/', defaultExcludes: false, fingerprint: true

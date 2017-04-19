@@ -36,7 +36,7 @@ def call() {
 			gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
 				verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
 				verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
-			error e.getStackTrace()
+			error e.getStackTrace().toString()
 		}
 	}
 }

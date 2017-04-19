@@ -34,7 +34,7 @@ def call(branch, gate_type) {
 			gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
 				verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
 				verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'regate'
-			error e.getStackTrace()
+			error e.getStackTrace().toString()
 		}
 	}
 }
