@@ -30,7 +30,7 @@ def call() {
 	} catch(e) {
 		if (e instanceof hudson.AbortException) {
 			println "Build aborted"
-			echo e.getStackTrace()
+			echo e.getStackTrace().toString()
 		} else { 
 			gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
 				verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
