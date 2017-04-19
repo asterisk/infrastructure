@@ -167,7 +167,7 @@ for (br in globals.ast_branches) {
 				gerritTrigger {
 					serverName(br.value.gerrit_trigger)
 					silentMode(false)
-					silentStartMode(false)
+					silentStartMode(true)
 					gerritBuildFailedVerifiedValue(-1)
 					gerritBuildSuccessfulVerifiedValue(1)
 					gerritBuildUnstableVerifiedValue(-1)
@@ -222,7 +222,7 @@ pipelineJob("check-testsuite") {
 		gerritTrigger {
 			serverName(globals.testsuite.gerrit_trigger)
 			silentMode(false)
-			silentStartMode(false)
+			silentStartMode(true)
 			gerritBuildFailedVerifiedValue(-1)
 			gerritBuildSuccessfulVerifiedValue(1)
 			gerritBuildUnstableVerifiedValue(-1)
@@ -269,7 +269,7 @@ pipelineJob("check-testsuite-pep8") {
 		gerritTrigger {
 			serverName(globals.testsuite.gerrit_trigger)
 			silentMode(false)
-			silentStartMode(false)
+			silentStartMode(true)
 			gerritBuildFailedVerifiedValue(-1)
 			gerritBuildSuccessfulVerifiedValue(1)
 			gerritBuildUnstableVerifiedValue(-1)
@@ -320,7 +320,7 @@ for (br in globals.ast_branches) {
 				gerritTrigger {
 					serverName(br.value.gerrit_trigger)
 					silentMode(false)
-					silentStartMode(false)
+					silentStartMode(true)
 					gerritBuildFailedVerifiedValue(-1)
 					gerritBuildSuccessfulVerifiedValue(2)
 					gerritBuildUnstableVerifiedValue(-1)
