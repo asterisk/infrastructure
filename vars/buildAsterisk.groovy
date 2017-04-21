@@ -145,7 +145,7 @@ def call(branch, buildopts, destdir) {
 				fi
 			"""
 
-			archiveArtifacts allowEmptyArchive: true, artifacts: 'config.log config_summary.log menuselect.makeopts menuselect.makedeps makeopts', defaultExcludes: false, fingerprint: true
+			archiveArtifacts allowEmptyArchive: true, artifacts: '**/config.log, **/config_summary.log, **/menuselect.makeopts, **/menuselect.makedeps, **/makeopts', defaultExcludes: false, fingerprint: true
 		}
 
 		stage("make") {

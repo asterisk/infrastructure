@@ -55,12 +55,13 @@ def call(test) {
 				} catch (e) {
 				}
 			}
+			sudo '''\
+				sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' asterisk-test-suite-report.xml
+				'''
 
-			sudo '''sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' asterisk-test-suite-report.xml'''
+			archiveArtifacts allowEmptyArchive: true, artifacts: '**/asterisk-test-suite-report.xml', defaultExcludes: false, fingerprint: true
+			archiveArtifacts allowEmptyArchive: true, artifacts: '**/logs/**', defaultExcludes: false, fingerprint: true
 
-			fingerprint "asterisk-test-suite-report.xml"
-			archiveArtifacts allowEmptyArchive: true, artifacts: 'asterisk-test-suite-report.xml logs/', defaultExcludes: false, fingerprint: true
-			archiveArtifacts allowEmptyArchive: true, artifacts: 'logs/**/refs.txt logs/**/refleaks-summary.txt', defaultExcludes: false, fingerprint: true
 			junit testResults: "asterisk-test-suite-report.xml",
 				healthScaleFactor: 1.0,
 				keepLongStdio: true
