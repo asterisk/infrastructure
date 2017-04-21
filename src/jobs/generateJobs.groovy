@@ -160,7 +160,7 @@ for (br in globals.ast_branches) {
 								checkAsterisk('${br.key}', '${arch}')
 							}
 						}""")
-					sandbox(true)
+					sandbox(false)
 				}
 			}
 			triggers {
@@ -215,7 +215,7 @@ pipelineJob("check-testsuite") {
 						checkTestsuite()
 					}
 				}""")
-			sandbox(true)
+			sandbox(false)
 		}
 	}
 	triggers {
@@ -313,7 +313,7 @@ for (br in globals.ast_branches) {
 								gateAsterisk('${br.key}', '${gt}')
 							}
 						}""")
-					sandbox(true)
+					sandbox(false)
 				}
 			}
 			triggers {
@@ -373,7 +373,7 @@ for (br in globals.ast_branches) {
 							}
 						}
 						""")
-					sandbox(true)
+					sandbox(false)
 				}
 			}
 		}

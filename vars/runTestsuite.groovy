@@ -59,8 +59,10 @@ def call(test) {
 				sed -i -r -e 's@name="(.*)/([^"]+)"@classname="\\1" name="\\2"@g' -e :1 -e 's@(classname=".*)/(.*")@\\1.\\2@;t1' -e 's@name="[.]@name="@g' asterisk-test-suite-report.xml
 				'''
 
-			archiveArtifacts allowEmptyArchive: true, artifacts: '**/asterisk-test-suite-report.xml', defaultExcludes: false, fingerprint: true
-			archiveArtifacts allowEmptyArchive: true, artifacts: '**/logs/**', defaultExcludes: false, fingerprint: true
+			archiveArtifacts allowEmptyArchive: true, defaultExcludes: false, fingerprint: true,
+				artifacts: 'asterisk-test-suite-report.xml'
+			archiveArtifacts allowEmptyArchive: true, defaultExcludes: false, fingerprint: true,
+				artifacts: 'logs/**'
 
 			junit testResults: "asterisk-test-suite-report.xml",
 				healthScaleFactor: 1.0,
