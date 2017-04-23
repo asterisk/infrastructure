@@ -29,15 +29,10 @@ def call() {
 			}
 		}
 	} catch(e) {
-		if (e instanceof hudson.AbortException) {
-			println "Build aborted"
-			echo e.getStackTrace().toString()
-		} else { 
-			gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
-				verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
-				verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
-			error e.getStackTrace().toString()
-		}
+		gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
+			verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
+			verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
+		error e.getStackTrace().toString()
 	}
 }
 
