@@ -14,12 +14,12 @@ def call(branch) {
 				[url: "https://github.com/asterisk/publish-docs.git"]]
 		]
 	}
-
-	checkoutProjectMirror("asterisk", branch, "astxml2wiki/asterisk")
-
-	stage("publish-to-wiki") {
-		dir("astxml2wiki/asterisk") {
-			sudo "../publish.sh ${branch}"
+	lock("${NODE_NAME}.asterisk.mirror") {
+		checkoutProjectMirror("asterisk", branch, "astxml2wiki/asterisk")
+		stage("publish-to-wiki") {
+			dir("astxml2wiki/asterisk") {
+				sudo "../publish.sh ${branch}"
+			}
 		}
 	}
 }

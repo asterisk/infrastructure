@@ -168,7 +168,6 @@ def call(branch, buildopts, destdir) {
 				${make} install || ${make} NOISY_BUILD=yes install 
 				${make} samples
 				set +e
-				git clean -fdx >/dev/null 2>&1
 				chown -R jenkins:users /var/lib/asterisk
 				chown -R jenkins:users /var/spool/asterisk
 				chown -R jenkins:users /var/log/asterisk
