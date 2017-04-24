@@ -19,7 +19,7 @@ def call(branch, periodic_type) {
 			git clean -fdx >/dev/null 2>&1
 			popd >/dev/null 2>&1
 			"""
-			return;
+			return
 		}
 		shell """\
 		pushd asterisk >/dev/null 2>&1
