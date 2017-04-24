@@ -3,24 +3,30 @@ def call(project, branch, destination) {
 		def repo = "/srv/git/${project}.mirror"
 		shell """\
 		sudo rm -rf ${destination} >/dev/null 2>&1 || :
-		isbare=`git -C ${repo} config --local core.bare 2>/dev/null || echo true`
-		if [ -d ${repo} -a "\${isbare}" = "true" ] ; then
-			rm -rf ${repo}
+		if [ -d ${repo} ] ; then
+			pushd ${repo} 
+			isbare=`git config --local core.bare 2>/dev/null || echo false`
+			popd
+		fi
+		if [ -d ${repo} -a "\${isbare}" = "false" ] ; then
+			sudo rm -rf ${repo}
 		fi
 		if [ ! -d ${repo} ] ; then
-			git clone git://git.asterisk.org/asterisk/${project}.git ${repo}
+			git clone --bare git://git.asterisk.org/asterisk/${project}.git ${repo}
+		else
+			pushd ${repo} 
+			git fetch origin
+			popd
 		fi
-		sudo chown -R jenkins:jenkins ${repo} >/dev/null 2>&1 || :
-		ln -s ${repo} ${destination}
 		"""
 		
 		checkout poll: false,
 			scm: [$class: 'GitSCM', branches: [[name: "*/${branch}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [
-					[$class: 'CloneOption', noTags: false],
+					[$class: 'CloneOption', noTags: false,
+						honorRefspec: true, reference: repo],
 					[$class: 'LocalBranch', localBranch: "${branch}"],
-					[$class: 'CleanBeforeCheckout'],
 					[$class: 'ScmName', name: "${project}.mirror"],
 					[$class: 'AuthorInChangelog'],
 					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${destination}"]

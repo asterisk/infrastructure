@@ -8,27 +8,29 @@ def call(destination) {
 		
 		shell """\
 		sudo rm -rf ${destination} >/dev/null 2>&1 || :
-		isbare=`git -C ${repo} config --local core.bare 2>/dev/null || echo true`
-		if [ -d ${repo} -a "\${isbare}" = "true" ] ; then
-			rm -rf ${repo}
+		if [ -d ${repo} ] ; then
+			pushd ${repo} 
+			isbare=`git config --local core.bare 2>/dev/null || echo false`
+			popd
+		fi
+		if [ -d ${repo} -a "\${isbare}" = "false" ] ; then
+			sudo rm -rf ${repo}
 		fi
 		if [ ! -d ${repo} ] ; then
-			git clone "${url}/${env.GERRIT_PROJECT}" ${repo}
+			git clone --bare "${url}/${env.GERRIT_PROJECT}" ${repo}
+		else
+			pushd ${repo}
+			git fetch origin
+			popd
 		fi
-		sudo chown -R jenkins:jenkins ${repo} >/dev/null 2>&1 || :
-		ln -s ${repo} ${destination}
-		pushd ${destination}
-		git checkout ${branch}
-		git pull
-		popd
 		"""
  
 		checkout poll: false,
 			scm: [$class: 'GitSCM', branches: [[name: "${refspec}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [
-					[$class: 'CloneOption', noTags: false],
-					[$class: 'CleanBeforeCheckout'],
+					[$class: 'CloneOption', noTags: false,
+						honorRefspec: true, reference: repo],
 					[$class: 'ScmName', name: "${env.GERRIT_PROJECT}.gerrit"],
 					[$class: 'AuthorInChangelog'],
 					[$class: 'RelativeTargetDirectory', relativeTargetDir: destination]
