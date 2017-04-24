@@ -17,6 +17,10 @@ def call(destination) {
 		fi
 		sudo chown -R jenkins:jenkins ${repo} >/dev/null 2>&1 || :
 		ln -s ${repo} ${destination}
+		pushd ${destination}
+		git checkout ${branch}
+		git pull
+		popd
 		"""
  
 		checkout poll: false,
@@ -31,7 +35,7 @@ def call(destination) {
 				],
 				submoduleCfg: [],
 				userRemoteConfigs: [
-					[name: 'origin', refspec: "refs/heads/${branch}:refs/heads/${branch} ${refspec}:${refspec}",
+					[name: 'origin', refspec: "${refspec}:${refspec}",
 						url: "${url}/${env.GERRIT_PROJECT}"]]]
 	}
 }
