@@ -7,7 +7,7 @@ def call(project, branch, destination) {
 		if [ -d ${repo} -a "\${isbare}" = "true" ] ; then
 			rm -rf ${repo}
 		fi
-		if [ ! -d $repo} ] ; then
+		if [ ! -d ${repo} ] ; then
 			git clone git://git.asterisk.org/asterisk/${project}.git ${repo}
 		fi
 		sudo chown -R jenkins:jenkins ${repo} >/dev/null 2>&1 || :
