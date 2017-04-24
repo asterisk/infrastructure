@@ -11,27 +11,26 @@ def call(branch, arch) {
 	manager.build.displayName = "${env.GERRIT_CHANGE_NUMBER}"
 	manager.createSummary("/plugin/workflow-job/images/48x48/pipelinejob.png").appendText("Execution Node: ${NODE_NAME}", false)
 
-		try {
-			def build_options = globals.test_options["unittst"].build_options ?: globals.default_build_options
-			lock("${NODE_NAME}.${env.GERRIT_PROJECT}.gerrit") {
-				checkoutGerritChange("asterisk")
-				buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}", "")
-				runAsteriskUnittests()
-				shell """\
-				pushd asterisk >/dev/null 2>&1
-				git clean -fdx >/dev/null 2>&1
-				popd >/dev/null 2>&1
-				"""
-			}
-			gerritverificationpublisher verifyStatusValue: 1, verifyStatusCategory: 'Passed',
-				verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
-				verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
-		} catch (e) {
-			gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
-				verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
-				verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
-			error e.getStackTrace().toString()
+	try {
+		def build_options = globals.test_options["unittst"].build_options ?: globals.default_build_options
+		lock("${NODE_NAME}.${env.GERRIT_PROJECT}.gerrit") {
+			checkoutGerritChange("asterisk")
+			buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}", "")
+			runAsteriskUnittests()
+			shell """\
+			pushd asterisk >/dev/null 2>&1
+			git clean -fdx >/dev/null 2>&1
+			popd >/dev/null 2>&1
+			"""
 		}
+		gerritverificationpublisher verifyStatusValue: 1, verifyStatusCategory: 'Passed',
+			verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
+			verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
+	} catch (e) {
+		gerritverificationpublisher verifyStatusValue: -1, verifyStatusCategory: 'Failed',
+			verifyStatusComment: '${env.BUILD_TAG}', verifyStatusName: "${env.JOB_NAME}",
+			verifyStatusReporter: 'Jenkins2', verifyStatusRerun: 'recheck'
+		error e.getStackTrace().toString()
 	}
 }
 
