@@ -18,7 +18,7 @@ def call(branch) {
 		checkoutProjectMirror("asterisk", branch, "astxml2wiki/asterisk")
 		stage("publish-to-wiki") {
 			dir("astxml2wiki/asterisk") {
-				sudo "../publish.sh ${branch}"
+				sudo "${WORKSPACE}/astxml2wiki/publish.sh ${branch}"
 			}
 		}
 	}
