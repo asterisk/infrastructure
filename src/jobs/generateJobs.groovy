@@ -265,39 +265,6 @@ pipelineJob("check-testsuite-pep8") {
 			sandbox(false)
 		}
 	}
-	triggers {
-		gerritTrigger {
-			serverName(globals.testsuite.gerrit_trigger)
-			silentMode(false)
-			silentStartMode(true)
-			gerritBuildFailedVerifiedValue(-1)
-			gerritBuildSuccessfulVerifiedValue(1)
-			gerritBuildUnstableVerifiedValue(-1)
-			notificationLevel("NONE")
-			triggerOnEvents {
-				changeRestored()
-				patchsetCreated {
-					excludeDrafts(false)
-					excludeTrivialRebase(false)
-					excludeNoCodeChange(true)
-				}
-				commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
-			}
-			gerritProjects {
-				gerritProject {
-					compareType("REG_EXP")
-					pattern('^testsuite$')
-					branches {
-						branch {
-							compareType("PLAIN")
-							pattern("master")
-						}
-					}
-					disableStrictForbiddenFileVerification(false)
-				}
-			}
-		}
-	}
 }
 
 println "Creating asterisk gate jobs"
