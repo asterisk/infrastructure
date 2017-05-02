@@ -324,6 +324,51 @@ for (br in globals.ast_branches) {
 	}
 }
 
+println "Creating testsuite gate job"
+pipelineJob("gate-testsuite") {
+	definition {
+		cps {
+			script("""\
+				manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
+				return
+			}""")
+			sandbox(false)
+		}
+	}
+	triggers {
+		gerritTrigger {
+			serverName(globals.testsuite.gerrit_trigger)
+			silentMode(false)
+			silentStartMode(true)
+			gerritBuildFailedVerifiedValue(-1)
+			gerritBuildSuccessfulVerifiedValue(2)
+			gerritBuildUnstableVerifiedValue(-1)
+			notificationLevel("OWNER_REVIEWERS")
+			triggerOnEvents {
+				commentAdded {
+					verdictCategory("CodeReview")
+					commentAddedTriggerApprovalValue("+2")
+				}
+				commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+: Code-Review[+]2$') }
+				commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..regate$') }
+			}
+			gerritProjects {
+				gerritProject {
+					compareType("REG_EXP")
+					pattern('^testsuite$')
+					branches {
+						branch {
+							compareType("PLAIN")
+							pattern("master")
+						}
+					}
+					disableStrictForbiddenFileVerification(false)
+				}
+			}
+		}
+	}
+}
+
 println "Creating asterisk periodic jobs"
 for (br in globals.ast_branches) {
 	for (pt in br.value.periodic_types) {
