@@ -330,8 +330,7 @@ pipelineJob("gate-testsuite") {
 		cps {
 			script("""\
 				manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
-				return
-			}""")
+			""")
 			sandbox(false)
 		}
 	}
