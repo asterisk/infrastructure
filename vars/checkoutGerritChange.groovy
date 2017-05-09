@@ -8,6 +8,8 @@ def call(destination) {
 		
 		shell """\
 		sudo rm -rf ${destination} >/dev/null 2>&1 || :
+		git config --global user.email "jenkins2@asterisk.org"
+		git config --global user.name "jenkins2"
 		if [ -d ${repo} ] ; then
 			pushd ${repo} 
 			isbare=`git config --local core.bare 2>/dev/null || echo false`
@@ -20,7 +22,7 @@ def call(destination) {
 			git clone --bare "${url}/${env.GERRIT_PROJECT}" ${repo}
 		else
 			pushd ${repo}
-			git fetch origin
+			git fetch origin ${env.GERRIT_BRANCH}:${env.GERRIT_BRANCH}
 			popd
 		fi
 		"""
@@ -29,7 +31,7 @@ def call(destination) {
 			scm: [$class: 'GitSCM', branches: [[name: "${refspec}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [
-					[$class: 'CloneOption', noTags: false,
+					[$class: 'CloneOption', noTags: true,
 						honorRefspec: true, reference: repo],
 					[$class: 'ScmName', name: "${env.GERRIT_PROJECT}.gerrit"],
 					[$class: 'AuthorInChangelog'],
@@ -39,5 +41,11 @@ def call(destination) {
 				userRemoteConfigs: [
 					[name: 'origin', refspec: "${refspec}:${refspec}",
 						url: "${url}/${env.GERRIT_PROJECT}"]]]
+		shell """\
+			pushd ${destination}
+			git fetch origin ${env.GERRIT_BRANCH}:${env.GERRIT_BRANCH}
+			git rebase ${env.GERRIT_BRANCH}
+			popd
+		"""
 	}
 }
