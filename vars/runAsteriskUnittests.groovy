@@ -50,6 +50,7 @@ def call() {
 
 			sudo """\
 				[ -d test-reports ] && sudo rm -rf test-reports
+				rm -rf core* || :
 				mkdir test-reports
 				asterisk -gn
 				sleep 3
@@ -60,6 +61,7 @@ def call() {
 				if [ -f core* ] ; then
 					echo "*** Found a core file after running unit tests ***"
 					gdb asterisk core* -ex "bt full" -ex "thread apply all bt" --batch
+					rm -rf core*
 					exit 1
 				fi
 				"""
