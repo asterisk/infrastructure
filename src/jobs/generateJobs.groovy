@@ -178,7 +178,7 @@ for (br in globals.ast_branches) {
 						patchsetCreated {
 							excludeDrafts(false)
 							excludeTrivialRebase(false)
-							excludeNoCodeChange(true)
+							excludeNoCodeChange(false)
 						}
 					}
 					gerritProjects {
@@ -187,12 +187,8 @@ for (br in globals.ast_branches) {
 							pattern('^asterisk$')
 							branches {
 								branch {
-									compareType("PLAIN")
-									pattern(br.key)
-								}
-								branch {
 									compareType("REG_EXP")
-									pattern("certified/${br.key}")
+									pattern("(certified/)?${br.key}(.[0-9]+)?")
 								}
 							}
 							disableStrictForbiddenFileVerification(false)
@@ -311,7 +307,7 @@ for (br in globals.ast_branches) {
 								}
 								branch {
 									compareType("REG_EXP")
-									pattern("certified/${br.key}")
+									pattern("(certified/)?${br.key}(.[0-9]+)?")
 								}
 							}
 							disableStrictForbiddenFileVerification(false)
