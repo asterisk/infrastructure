@@ -364,25 +364,3 @@ pipelineJob("gate-testsuite") {
 	}
 }
 
-println "Creating asterisk periodic jobs"
-for (br in globals.ast_branches) {
-	for (pt in br.value.periodic_types) {
-		pipelineJob("periodic-ast-${br.key}-${pt}") {
-			triggers {
-				cron('H 1 * * *')
-			}
-			definition {
-				cps {
-					script("""\
-						timestamps() {
-							node ('job:periodic-${pt} || job:periodic') {
-								periodicAsterisk('${br.key}', '${pt}')
-							}
-						}
-						""")
-					sandbox(false)
-				}
-			}
-		}
-	}
-}
