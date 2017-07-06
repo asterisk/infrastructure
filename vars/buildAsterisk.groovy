@@ -60,21 +60,21 @@ def call(branch, buildopts, destdir) {
 				cd contrib/ast-db-manage
 				find -name *.pyc -delete
 				out=`alembic -c config.ini.sample branches`
-				if [ x$out != x ] ; then
+				if [ "x$out" != "x" ] ; then
 					>&2 echo "Alembic branches were found for config"
 					>&2 echo $out
 					exit 1
 				fi
 			
 				out=`alembic -c cdr.ini.sample branches`
-				if [ x$out != x ] ; then
+				if [ "x$out" != "x" ] ; then
 					>&2 echo "Alembic branches were found for cdr"
 					>&2 echo $out
 					exit 1
 				fi
 
 				out=`alembic -c voicemail.ini.sample branches`
-				if [ x$out != x ] ; then
+				if [ "x$out" != "x" ] ; then
 					>&2 echo "Alembic branches were found for voicemail"
 					>&2 echo $out
 					exit 1
