@@ -97,6 +97,29 @@ class globals {
 			arches: [ "32", "64" ],
 			gerrit_trigger: "Gerrit Public"
 		],
+		'15': [
+			build_options: "${basic_build_options} -e codec_silk -e app_statsd",
+			gate_types: [
+				"pjsip",
+				"sip",
+				"iax2_local",
+				"extmwi",
+				"ari"
+			],
+			periodic_types: [
+				"unittst",
+				"pjsip",
+				"sip",
+				"iax2_local",
+				"ari",
+				"extmwi",
+				"other",
+				"realtime",
+				"doc"
+			],
+			arches: [ "32", "64" ],
+			gerrit_trigger: "Gerrit Public"
+		],
 		'master': [
 			build_options: "${basic_build_options} -e codec_silk -e app_statsd",
 			gate_types: [
