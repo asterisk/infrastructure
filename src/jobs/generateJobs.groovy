@@ -175,6 +175,7 @@ for (br in globals.ast_branches) {
 					triggerOnEvents {
 						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
 						changeRestored()
+						draftPublished()
 						patchsetCreated {
 							excludeDrafts(false)
 							excludeTrivialRebase(false)
@@ -225,6 +226,7 @@ pipelineJob("check-testsuite") {
 			notificationLevel("OWNER_REVIEWERS")
 			triggerOnEvents {
 				changeRestored()
+				draftPublished()
 				patchsetCreated {
 					excludeDrafts(false)
 					excludeTrivialRebase(false)
