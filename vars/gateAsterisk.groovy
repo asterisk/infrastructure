@@ -23,7 +23,7 @@ def call(branch, gate_type) {
 			"""
 		}
 		lock("${NODE_NAME}.testsuite.mirror") {
-			checkoutProjectMirror("testsuite", "master", "testsuite")
+			checkoutProjectMirror("testsuite", branch, "testsuite")
 			runTestsuite(globals.test_options[gate_type])
 		}
 		gerritverificationpublisher verifyStatusValue: 2, verifyStatusCategory: 'Passed',
