@@ -54,7 +54,7 @@ def call() {
 				mkdir test-reports
 				asterisk -gn
 				sleep 3
-				asterisk -rx "core waitfullybooted"
+				asterisk -rx "core waitfullybooted" || { sleep 3 ; asterisk -rx "core waitfullybooted" ; }
 				sleep 1
 				asterisk -rx "test execute all"
 				asterisk -rx "test generate results xml ${pwd()}/test-reports/unit-test-results.xml"
