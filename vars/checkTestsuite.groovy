@@ -16,8 +16,7 @@ def call() {
 				def test_names = [
 					"buildoptions",
 					"channel_test_condition",
-					"sippversion",
-					"version"
+					"sippversion"
 				]
 				for (test_name in test_names) {
 					echo " ==> Executing " + test_name
