@@ -151,7 +151,9 @@ def call(branch, buildopts, destdir) {
 		}
 
 		stage("make") {
+			shell "${make} ari-stubs"
 			shell "${make} -j${jobs} || ${make} -j${jobs} NOISY_BUILD=yes"
+			shell 'test $(git status --porcelain | wc -l) -eq 0 || (git status --porcelain; false)'
 		}
 
 		stage("validate-docs") {

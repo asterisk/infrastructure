@@ -240,8 +240,8 @@ pipelineJob("check-testsuite") {
 					pattern('^testsuite$')
 					branches {
 						branch {
-							compareType("PLAIN")
-							pattern("master")
+							compareType("REG_EXP")
+							pattern("(master|13|14|15)")
 						}
 					}
 					disableStrictForbiddenFileVerification(false)
@@ -355,8 +355,8 @@ pipelineJob("gate-testsuite") {
 					pattern('^testsuite$')
 					branches {
 						branch {
-							compareType("PLAIN")
-							pattern("master")
+							compareType("REG_EXP")
+							pattern("(master|13|14|15)")
 						}
 					}
 					disableStrictForbiddenFileVerification(false)
