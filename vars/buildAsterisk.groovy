@@ -147,7 +147,7 @@ def call(branch, buildopts, destdir) {
 
 			archiveArtifacts allowEmptyArchive: true, defaultExcludes: false, fingerprint: true,
 				artifacts: 'config.log, config_summary.log, menuselect.makeopts, menuselect.makedeps, makeopts'
-				
+			shell "rm -rf config_summary.log || : "	
 		}
 
 		stage("make") {
