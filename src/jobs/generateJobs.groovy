@@ -202,54 +202,59 @@ for (br in globals.ast_branches) {
 }
 
 println "Creating testsuite check jobs"
-pipelineJob("check-testsuite") {
-	definition {
-		cps {
-			script("""\
-				manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
-				timestamps() {
-					node ('job:check') {
-						checkTestsuite()
-					}
-				}""")
-			sandbox(false)
-		}
-	}
-	triggers {
-		gerritTrigger {
-			serverName(globals.testsuite.gerrit_trigger)
-			silentMode(false)
-			silentStartMode(true)
-			gerritBuildFailedVerifiedValue(-1)
-			gerritBuildSuccessfulVerifiedValue(1)
-			gerritBuildUnstableVerifiedValue(-1)
-			notificationLevel("OWNER_REVIEWERS")
-			triggerOnEvents {
-				changeRestored()
-				draftPublished()
-				patchsetCreated {
-					excludeDrafts(false)
-					excludeTrivialRebase(false)
-					excludeNoCodeChange(true)
+for (br in globals.testsuite_branches) {
+	for (arch in br.value.arches) {
+		pipelineJob("check-testsuite-${br.key}-${arch}") {
+			definition {
+				cps {
+					script("""\
+						manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
+						timestamps() {
+							node ('job:check && bits:${arch}') {
+								checkTestsuite('${br.key}', '${arch}')
+							}
+						}""")
+					sandbox(false)
 				}
-				commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
 			}
-			gerritProjects {
-				gerritProject {
-					compareType("REG_EXP")
-					pattern('^testsuite$')
-					branches {
-						branch {
-							compareType("REG_EXP")
-							pattern("(master|13|14|15)")
+			triggers {
+				gerritTrigger {
+					serverName(br.value.gerrit_trigger)
+					silentMode(false)
+					silentStartMode(true)
+					gerritBuildFailedVerifiedValue(-1)
+					gerritBuildSuccessfulVerifiedValue(1)
+					gerritBuildUnstableVerifiedValue(-1)
+					notificationLevel("OWNER_REVIEWERS")
+					triggerOnEvents {
+						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..recheck$') }
+						changeRestored()
+						draftPublished()
+						patchsetCreated {
+							excludeDrafts(false)
+							excludeTrivialRebase(false)
+							excludeNoCodeChange(false)
 						}
 					}
-					disableStrictForbiddenFileVerification(false)
+					gerritProjects {
+						gerritProject {
+							compareType("REG_EXP")
+							pattern('^testsuite$')
+							branches {
+								branch {
+									compareType("REG_EXP")
+									pattern("${br.key}(.[0-9]+)?")
+								}
+							}
+							disableStrictForbiddenFileVerification(false)
+						}
+					}
 				}
 			}
 		}
 	}
 }
+
 pipelineJob("check-testsuite-pep8") {
 	definition {
 		cps {

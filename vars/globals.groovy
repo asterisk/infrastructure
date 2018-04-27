@@ -144,7 +144,22 @@ class globals {
 		]
 	]
 
-	def static testsuite = [
-		gerrit_trigger: "Gerrit Public"
+	def static testsuite_branches = [
+		'13': [
+			arches: [ "32", "64" ],
+			gerrit_trigger: "Gerrit Public"
+		],
+		'14': [
+			arches: [ "32", "64" ],
+			gerrit_trigger: "Gerrit Public"
+		],
+		'15': [
+			arches: [ "32", "64" ],
+			gerrit_trigger: "Gerrit Public"
+		],
+		'master': [
+			arches: [ "32", "64" ],
+			gerrit_trigger: "Gerrit Public"
+		]
 	]
 }
