@@ -339,7 +339,7 @@ pipelineJob("gate-testsuite") {
 	}
 	triggers {
 		gerritTrigger {
-			serverName(globals.testsuite.gerrit_trigger)
+			serverName(globals.testsuite_branches.master.gerrit_trigger)
 			silentMode(false)
 			silentStartMode(true)
 			gerritBuildFailedVerifiedValue(-1)
