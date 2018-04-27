@@ -1,4 +1,4 @@
-def call() {
+def call(branch, arch) {
 	if (!env.GERRIT_REFSPEC || !env.GERRIT_REFSPEC.length()) {
 		error '''
 			This job can not be triggered manually as it relies on environment variables
