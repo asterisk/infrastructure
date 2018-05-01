@@ -23,7 +23,8 @@ def call(branch, gate_type) {
 			"""
 		}
 		lock("${NODE_NAME}.testsuite.mirror") {
-			checkoutProjectMirror("testsuite", branch, "testsuite")
+			def testsuite_branch = (env.GERRIT_BRANCH ==~ "certified/.*" ) ? "legacy" : branch
+			checkoutProjectMirror("testsuite", testsuite_branch, "testsuite")
 			runTestsuite(globals.test_options[gate_type])
 		}
 		gerritverificationpublisher verifyStatusValue: 2, verifyStatusCategory: 'Passed',
