@@ -15,7 +15,7 @@ def call(branch, arch) {
 		def build_options = globals.test_options["unittst"].build_options ?: globals.default_build_options
 		lock("${NODE_NAME}.${env.GERRIT_PROJECT}.gerrit") {
 			checkoutGerritChange("asterisk")
-			shell "test $(find asterisk -name '*.rej' | wc -l) -eq 0 || (echo 'Found *.rej, cannot proceed'; false)"
+			shell "test \$(find asterisk -name '*.rej' | wc -l) -eq 0 || (echo 'Found *.rej, cannot proceed'; false)"
 			buildAsterisk(branch, "${build_options} ${globals.ast_branches[branch].build_options}", "")
 			runAsteriskUnittests()
 			shell """\
