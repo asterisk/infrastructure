@@ -243,7 +243,7 @@ for (br in globals.testsuite_branches) {
 							branches {
 								branch {
 									compareType("REG_EXP")
-									pattern("${br.key}(.[0-9]+)?")
+									pattern("(certified/)?${br.key}(.[0-9]+)?")
 								}
 							}
 							disableStrictForbiddenFileVerification(false)
@@ -361,7 +361,7 @@ pipelineJob("gate-testsuite") {
 					branches {
 						branch {
 							compareType("REG_EXP")
-							pattern("(master|13|14|15)")
+							pattern("master|((certified/)?(13|14|15)(.[0-9]+)?)")
 						}
 					}
 					disableStrictForbiddenFileVerification(false)
