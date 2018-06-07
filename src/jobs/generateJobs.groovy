@@ -163,6 +163,10 @@ for (br in globals.ast_branches) {
 					sandbox(false)
 				}
 			}
+			logRotator {
+				daysToKeep(20)
+				artifactDaysToKeep(10)
+			}
 			triggers {
 				gerritTrigger {
 					serverName(br.value.gerrit_trigger)
@@ -216,6 +220,10 @@ for (br in globals.testsuite_branches) {
 						}""")
 					sandbox(false)
 				}
+			}
+			logRotator {
+				daysToKeep(20)
+				artifactDaysToKeep(10)
 			}
 			triggers {
 				gerritTrigger {
@@ -286,6 +294,10 @@ for (br in globals.ast_branches) {
 					sandbox(false)
 				}
 			}
+			logRotator {
+				daysToKeep(20)
+				artifactDaysToKeep(10)
+			}
 			triggers {
 				gerritTrigger {
 					serverName(br.value.gerrit_trigger)
@@ -336,6 +348,10 @@ pipelineJob("gate-testsuite") {
 			""")
 			sandbox(false)
 		}
+	}
+	logRotator {
+		daysToKeep(20)
+		artifactDaysToKeep(10)
 	}
 	triggers {
 		gerritTrigger {
