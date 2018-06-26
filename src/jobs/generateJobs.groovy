@@ -420,7 +420,7 @@ pipelineJob("gate-testsuite") {
 					gerritProjects {
 						gerritProject {
 							compareType("REG_EXP")
-							pattern('^asterisk$')
+							pattern('^testsuite$')
 							branches {
 								branch {
 									compareType("PLAIN")
@@ -428,7 +428,7 @@ pipelineJob("gate-testsuite") {
 								}
 								branch {
 									compareType("REG_EXP")
-									pattern("(certified/)?master(.[0-9]+)?")
+									pattern("master|((certified/)?(13|14|15)(.[0-9]+)?)")
 								}
 							}
 							disableStrictForbiddenFileVerification(false)
