@@ -12,7 +12,7 @@ def call(project, branch, destination) {
 			sudo rm -rf ${repo}
 		fi
 		if [ ! -d ${repo} ] ; then
-			git clone --bare git://git.asterisk.org/asterisk/${project}.git ${repo}
+			git clone --bare https://gerrit.asterisk.org/${project} ${repo}
 		else
 			pushd ${repo} 
 			git fetch origin
@@ -34,6 +34,6 @@ def call(project, branch, destination) {
 				submoduleCfg: [],
 				userRemoteConfigs: [
 					[name: 'origin', refspec: "+refs/heads/${branch}:refs/remotes/origin/${branch}",
-						url: "git://git.asterisk.org/asterisk/${project}.git"]]]		
+						url: "https://gerrit.asterisk.org/${project}"]]]		
     }
 }
