@@ -439,6 +439,5 @@ pipelineJob("gate-testsuite") {
 
 		}
 	}
-}
 
 
