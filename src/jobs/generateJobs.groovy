@@ -387,3 +387,58 @@ pipelineJob("gate-testsuite") {
 	}
 }
 
+	for (gt in globals.ast_branches['master'].gate_types) {
+		pipelineJob("gate-testsuite-ast-master-${gt}") {
+			definition {
+				cps {
+					script("""\
+						manager.build.displayName = "\${env.GERRIT_CHANGE_NUMBER}"
+						timestamps() {
+							node ('job:gate') {
+								gateTestsuite('master', '${gt}')
+							}
+						}""")
+					sandbox(false)
+				}
+			}
+			logRotator {
+				daysToKeep(20)
+				artifactDaysToKeep(10)
+			}			
+			triggers {
+				gerritTrigger {
+					serverName(globals.ast_branches['master'].gerrit_trigger)
+					silentMode(false)
+					silentStartMode(true)
+					gerritBuildFailedVerifiedValue(-1)
+					gerritBuildSuccessfulVerifiedValue(1)
+					gerritBuildUnstableVerifiedValue(-1)
+					notificationLevel("OWNER_REVIEWERS")
+					triggerOnEvents {
+						commentAddedContains { commentAddedCommentContains('^Patch Set [0-9]+:..asterisk-gate$') }
+					}
+					gerritProjects {
+						gerritProject {
+							compareType("REG_EXP")
+							pattern('^asterisk$')
+							branches {
+								branch {
+									compareType("PLAIN")
+									pattern('master')
+								}
+								branch {
+									compareType("REG_EXP")
+									pattern("(certified/)?master(.[0-9]+)?")
+								}
+							}
+							disableStrictForbiddenFileVerification(false)
+						}
+					}
+				}
+			}
+
+		}
+	}
+}
+
+
